@@ -21,69 +21,71 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 |
 */
 
-Route::get('/', function () {
+route::get('/', function () {
     return redirect('/dashboard');
 })->middleware('auth');
 
 
-Route::group(['middleware'=> 'auth'],function(){
+route::group(['middleware'=> 'auth'],function(){
     //DASHBOARD
-    Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+    route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
     //Tahap 1
-    Route::get('/tahap1',[TahapController::class,'index1'])->name('tahap.1');
-    route::get('/tahap1/{id}',[TahapController::class,'detail1'])->name('tahap1.detail');
+    route::get('/tahap1',[TahapController::class,'index1'])->name('tahap.1');
+    route::get('/tahap1/{id_proposal}',[TahapController::class,'detail1'])->name('tahap1.detail');
+    route::post('/tahap1/post/rekon',[TahapController::class,'post_rekon_tahap_1'])->name('rekon_tahap_1');
+
     //Tahap 2
-    Route::get('/tahap2',[TahapController::class,'index2'])->name('tahap.2');
+    route::get('/tahap2',[TahapController::class,'index2'])->name('tahap.2');
     route::get('/tahap2/{id}',[TahapController::class,'detail2'])->name('tahap2.detail');
     //Tahap 3
-    Route::get('/tahap3',[TahapController::class,'index3'])->name('tahap.3');
+    route::get('/tahap3',[TahapController::class,'index3'])->name('tahap.3');
     route::get('/tahap3/{id}',[TahapController::class,'detail3'])->name('tahap3.detail');
     //Tahap 4
-    Route::get('/tahap4',[TahapController::class,'index4'])->name('tahap.4');
+    route::get('/tahap4',[TahapController::class,'index4'])->name('tahap.4');
     route::get('/tahap4/{id}',[TahapController::class,'detail4'])->name('tahap4.detail');
 });
 
-Route::get('/tables', function () {
+route::get('/tables', function () {
     return view('tables');
 })->name('tables')->middleware('auth');
 
-Route::get('/signin', function () {
+route::get('/signin', function () {
     return view('account-pages.signin');
 })->name('signin');
 
-Route::get('/signup', function () {
+route::get('/signup', function () {
     return view('account-pages.signup');
 })->name('signup')->middleware('guest');
 
-Route::get('/sign-up', [RegisterController::class, 'create'])
+route::get('/sign-up', [RegisterController::class, 'create'])
     ->middleware('guest')
     ->name('sign-up');
 
-Route::post('/sign-up', [RegisterController::class, 'store'])
+route::post('/sign-up', [RegisterController::class, 'store'])
     ->middleware('guest');
 
-Route::get('/sign-in', [LoginController::class, 'create'])
+route::get('/sign-in', [LoginController::class, 'create'])
     ->middleware('guest')
     ->name('sign-in');
 
-Route::post('/sign-in', [LoginController::class, 'store'])
+route::post('/sign-in', [LoginController::class, 'store'])
     ->middleware('guest');
 
-Route::post('/logout', [LoginController::class, 'destroy'])
+route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
     ->middleware('guest')
     ->name('password.request');
 
-Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.email');
 
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
     ->middleware('guest')
     ->name('password.reset');
 
-Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+route::post('/reset-password', [ResetPasswordController::class, 'store'])
     ->middleware('guest');
