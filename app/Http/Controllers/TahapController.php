@@ -61,6 +61,32 @@ class TahapController extends Controller
                                 ->where('id_proposal_smart_psr','=',$get_id_proposal_smart_psr)
                                 ->get();
 
+        $list_id_pekebun_sudah_rekon = $get_id_hasil_rekon->pluck('id_pekebun_rdp');
+
+        $id_proposal_rdp = $get_id_hasil_rekon->value('id_proposal_rdp');
+
+        $data_pekebun_sudah_rekon = DB::connection('mysql_rdp')
+                            ->table('pekebun')
+                            ->whereIn('id',$list_id_pekebun_sudah_rekon)
+                            ->orderBy('nama_pekebun','ASC')
+                            ->get();
+
+        $data_pekebun_sudah_rekon = $data_pekebun_sudah_rekon->keyBy('id');
+
+        foreach ($data_pekebun_sudah_rekon as $key => $value) {
+            $data_pekebun_sudah_rekon[$key]->luas_lahan = 0.0000;
+        }
+
+        $get_data_legalitas = DB::connection('mysql_rdp')
+                              ->table('legalitas_lahan_pekebun')
+                              ->whereIn('id_pekebun',$list_id_pekebun_sudah_rekon)
+                              ->where('id_proposal','=',$id_proposal_rdp)
+                              ->get();
+
+        foreach ($get_data_legalitas as $key => $value) {
+            $data_pekebun_sudah_rekon[$value->id_pekebun]->luas_lahan += $value->luas_polygon_legalitas_lahan;
+        }
+
         // Key By Data Pekebun buat di Apus Kalo Dia Udah di Rekon
         $data_pekebun_psr_online = $data_pekebun_psr_online->keyBy('id_pekebun');
         $data_pekebun_smart_psr = $data_pekebun_smart_psr->keyBy('id');
@@ -70,11 +96,10 @@ class TahapController extends Controller
             unset($data_pekebun_smart_psr[$value->id_pekebun_smart_psr]);
         }
 
-        return view('tahap1.detail')->with(compact('data_pekebun_psr_online','data_pekebun_smart_psr','get_data_kelembagaan_pekebun'));
+        return view('tahap1.detail')->with(compact('data_pekebun_psr_online','data_pekebun_smart_psr','get_data_kelembagaan_pekebun','data_pekebun_sudah_rekon'));
     }
 
     public function post_rekon_tahap_1(Request $request) {
-        // dd($request->all());
         $now = date('Y-m-d H:i:s');
         $get_data_pekebun_psr_online =  DB::connection('mysql_psr')
                                         ->table('tb_pekebun')
@@ -109,7 +134,7 @@ class TahapController extends Controller
         $cek_nik_udah_kedaftar_apa_belom =  DB::connection('mysql_rdp')
                                             ->table('pekebun')
                                             ->where('nik_pekebun','=',trim($get_data_pekebun_psr_online->no_ktp))
-                                            ->count();
+                                            ->first();
 
         // Cek Udah Ke Daftar Belom Proposal Sama LP Nya
         $cek_terdaftar_lembaga_pekebun =    DB::connection('mysql_rdp')
@@ -117,6 +142,9 @@ class TahapController extends Controller
                                             ->where('nama_kelembagaan_pekebun','=',trim($get_data_kelembagaan_pekebun_psr_online->koperasi))
                                             ->first();
 
+        $cek_proposal_rdp =  DB::connection('mysql_rdp')
+                                            ->table('legalitas_lahan_pekebun')
+                                            ->value('polygon_legalitas_lahan');
 
         if ($cek_terdaftar_lembaga_pekebun === null) {
             $id_kelembagaan_pekebun = DB::connection('mysql_rdp')
@@ -174,96 +202,48 @@ class TahapController extends Controller
             $id_kelembagaan_pekebun = $cek_terdaftar_lembaga_pekebun->id;
         }
 
-        // $cek_proposal_rdp =  DB::connection('mysql_rdp')
-        //                                     ->table('proposal')
-        //                                     ->where('nomo_proposal','=',trim($nomor_proposal))
-        //                                     ->first();
+        $cek_proposal_rdp =  DB::connection('mysql_rdp')
+                                            ->table('proposal')
+                                            ->where('nomor_proposal','=',trim($nomor_proposal))
+                                            ->first();
 
-        // if ($cek_proposal_rdp === null) {
-        //     $id_nomor_proposal = DB::connection('mysql_rdp')
-        //                          ->table('proposal')
-        //                          ->insertGetId([
-        //                             "id_kelembagaan_pekebun" => $id_kelembagaan_pekebun,
-        //                             "nomor_proposal" => $nomor_proposal,
-        //                             "tanggal_pengajuan_proposal" => ,
-        //                             "jalur_pengajuan" => ,
-        //                             "status_lahan" => ,
-        //                             "bank_mitra" => ,
-        //                             "cabang_bank_mitra" => ,
-        //                             "rencana_anggaran_belanja" => ,
-        //                             "produktifitas_tanaman" => ,
-        //                             "tahun_tanam_tanaman" => ,
-        //                             "luas_lahan_diajukan" => ,
-        //                             "luas_lahan_didanai" => ,
-        //                             "luas_lahan_dikembalikan" => ,
-        //                             "status_verifikasi_dokumen" => ,
-        //                             "tanggal_verifikasi_dokumen" => ,
-        //                             "verifikator_verifikasi_dokumen" => ,
-        //                             "keterangan_verifikasi_dokumen" => ,
-        //                             "created_at" => ,
-        //                             "created_by" => ,
-        //                             "updated_at" => ,
-        //                             "updated_by" => ,
-        //                             "step" => ,
-        //                             "status_push_verifikator" => ,
-        //                          ]);
-        // }
+        if ($cek_proposal_rdp === null) {
+            $id_nomor_proposal = DB::connection('mysql_rdp')
+                                 ->table('proposal')
+                                 ->insertGetId([
+                                    "id_kelembagaan_pekebun" => $id_kelembagaan_pekebun,
+                                    "nomor_proposal" => $nomor_proposal,
+                                    "tanggal_pengajuan_proposal" => date('Y-m-d',strtotime($get_data_proposal->tgl_input)),
+                                    "jalur_pengajuan" => $get_data_proposal->jalur,
+                                    "status_lahan" => NULL,
+                                    "bank_mitra" => $get_data_proposal->nama_bank,
+                                    "cabang_bank_mitra" => $get_data_proposal->cabang_bank_proposals,
+                                    "rencana_anggaran_belanja" => NULL,
+                                    "produktifitas_tanaman" => $get_data_proposal->produktivitas_tanaman,
+                                    "tahun_tanam_tanaman" => $get_data_proposal->tahun_tanaman,
+                                    "luas_lahan_diajukan" => NULL,
+                                    "luas_lahan_didanai" => NULL,
+                                    "luas_lahan_dikembalikan" => NULL,
+                                    "status_verifikasi_dokumen" => NULL,
+                                    "tanggal_verifikasi_dokumen" => NULL,
+                                    "verifikator_verifikasi_dokumen" => NULL,
+                                    "keterangan_verifikasi_dokumen" => NULL,
+                                    "created_at" => $now,
+                                    "created_by" => Auth::user()->name,
+                                    "updated_at" => $now,
+                                    "updated_by" => Auth::user()->name,
+                                    "step" => NULL,
+                                    "status_push_verifikator" => NULL,
+                                 ]);
+        }else{
+            $id_nomor_proposal = $cek_proposal_rdp->id;
+        }
 
 
 
         // dd($nomor_proposal,$request->all(),$cek_nik_udah_kedaftar_apa_belom,$get_data_pekebun_psr_online->tgl_lahir);
-            // Insert Legalitas Dia
-            $get_data_legalitas =   DB::connection('mysql_psr')
-                                    ->table('tb_legalitas')
-                                    ->where('id_pekebun','=',$request->id_pekebun_psr_online)
-                                    ->get();
 
-            // foreach ($get_data_legalitas as $key => $value) {
-            //     $id_legalitas = DB::connection('mysql_rdp')
-            //                     ->table('legalitas_lahan_pekebun')
-            //                     ->insert([
-            //                         "id_proposal" => ,
-            //                         "id_pekebun" => ,
-            //                         "jenis_dokumen_legalitas_lahan" => ,
-            //                         "nomor_dokumen_legalitas_lahan" => ,
-            //                         "nama_tertera_dokumen_legalitas_lahan" => ,
-            //                         "tanggal_terbit_dokumen_legalitas_lahan" => ,
-            //                         "nama_asli_file_dokumen_legalitas_lahan" => ,
-            //                         "nama_file_dokumen_legalitas_lahan" => ,
-            //                         "lokasi_file_dokumen_legalitas_lahan" => ,
-            //                         "polygon_legalitas_lahan" => ,
-            //                         "luas_polygon_legalitas_lahan" => ,
-            //                         "polygon_verifikasi_legalitas_lahan" => ,
-            //                         "luas_polygon_verifikasi_legalitas_lahan" => ,
-            //                         "verifikator_verifikasi_legalitas_lahan" => ,
-            //                         "keterangan_verifikasi_legalitas_lahan" => ,
-            //                         "created_at" => ,
-            //                         "created_by" => ,
-            //                         "updated_at" => ,
-            //                         "updated_by" => ,
-            //                         "deleted_at" => ,
-            //                         "deleted_by" => ,
-            //                     ])
-            // }
-
-            dd($get_data_legalitas);
-
-        if ($cek_nik_udah_kedaftar_apa_belom >= 1) {
-
-        }else{
-            // Insert ke Table lookup pekebun proposal
-            DB::connection('mysql_rdp')
-            ->table('lookup_pekebun_proposal')
-            ->insert([
-                'nomor_proposal' => $nomor_proposal,
-                'id_proposal_psr_online' => $get_data_pekebun_psr_online->id_proposal,
-                'id_proposal_smart_psr' => $get_data_pekebun_smart_psr->id_proposal,
-                'id_pekebun_psr_online' => $get_data_pekebun_psr_online->id_pekebun,
-                'id_pekebun_smart_psr' => $get_data_pekebun_smart_psr->id,
-                'created_at' => $now,
-                'created_by' => Auth::user()->name
-            ]);
-
+        if ($cek_nik_udah_kedaftar_apa_belom === null) {
             // Insert ke Table pekebun
             $id_pekebun = DB::connection('mysql_rdp')
             ->table('pekebun')
@@ -287,6 +267,45 @@ class TahapController extends Controller
                 "updated_at" => $now,
                 "updated_by" => Auth::user()->name
             ]);
+        }else{
+            $id_pekebun = $cek_nik_udah_kedaftar_apa_belom->id;
+        }
+            // Insert ke Table lookup pekebun proposal
+            DB::connection('mysql_rdp')
+            ->table('lookup_pekebun_proposal')
+            ->insert([
+                'nomor_proposal' => $nomor_proposal,
+                'id_proposal_psr_online' => $get_data_pekebun_psr_online->id_proposal,
+                'id_proposal_smart_psr' => $get_data_pekebun_smart_psr->id_proposal,
+                'id_pekebun_psr_online' => $get_data_pekebun_psr_online->id_pekebun,
+                'id_pekebun_smart_psr' => $get_data_pekebun_smart_psr->id,
+                'created_at' => $now,
+                'created_by' => Auth::user()->name,
+                'id_proposal_rdp' => $id_nomor_proposal,
+                'id_kelembagaan_pekebun_rdp' => $id_kelembagaan_pekebun,
+                'id_pekebun_rdp' => $id_pekebun
+            ]);
+
+            // Insert ke Table lookup Pekebunnya Proposal
+            DB::connection('mysql_rdp')
+            ->table('pekebunnya_proposal')
+            ->insert([
+                'id_kelembagaan_pekebun' => $id_kelembagaan_pekebun,
+                'id_proposal' => $id_nomor_proposal,
+                'id_pekebun' => $id_pekebun,
+                'created_at' => $now,
+                'created_by' => Auth::user()->name
+            ]);
+
+            // Insert ke Table lookup Pekebunnya Kelembagaan
+            DB::connection('mysql_rdp')
+            ->table('pekebunnya_kelembagaan')
+            ->insert([
+                'id_kelembagaan_pekebun' => $id_kelembagaan_pekebun,
+                'id_pekebun' => $id_pekebun,
+                'created_at' => $now,
+                'created_by' => Auth::user()->name
+            ]);
 
             // Insert Log Pekebun Di Migrasiin
             DB::connection('mysql_rdp')
@@ -295,13 +314,71 @@ class TahapController extends Controller
                 'id_pekebun' => $id_pekebun,
                 'log' => "Pekebun ".strtoupper(trim($get_data_pekebun_psr_online->nama_pekebun) == null ? NULL : trim($get_data_pekebun_psr_online->nama_pekebun))." (NIK: ".trim($get_data_pekebun_psr_online->no_ktp) == null ? NULL : trim($get_data_pekebun_psr_online->no_ktp).") di migrasi oleh User RDP - ".Auth::user()->email." melalui aplikasi migrasi RDP",
                 'created_at' => $now,
-                'created_by' => "RDP - ".Auth::user()->email
+                'created_by' => "RDP - ".Auth::user()->name
             ]);
 
+            // Insert Legalitas Dia
+            $get_data_legalitas = DB::connection('mysql_psr')
+                                  ->table('tb_legalitas')
+                                  ->where('id_pekebun','=',$request->id_pekebun_psr_online)
+                                  ->orderBy('id_legalitas','ASC')
+                                  ->get();
 
-        }
+            foreach ($get_data_legalitas as $key => $value) {
+                $polygon_psr_online = DB::connection('mysql_psr')
+                                      ->table('tb_kordinat')
+                                      ->where('id_legalitas','=',$value->id_legalitas)
+                                      ->orderBy('no_urut_kordinat','ASC')
+                                      ->get();
 
-        dd($nomor_proposal,$request->all(),$cek_nik_udah_kedaftar_apa_belom,$get_data_pekebun_psr_online);
+                if (count($polygon_psr_online) >= 1) {
+                    $polygon_peta = "[";
+                    foreach ($polygon_psr_online as $key => $value) {
+                        $polygon_peta .= "[".'"'.$value->longitude.'","'.$value->latitude.'"]';
+                    }
+                    $polygon_peta .= "]";
+                }else{
+                    $polygon_peta = NULL;
+                }
+                $id_legalitas = DB::connection('mysql_rdp')
+                                ->table('legalitas_lahan_pekebun')
+                                ->insert([
+                                    "id_proposal" => $id_nomor_proposal,
+                                    "id_pekebun" => $id_pekebun,
+                                    "jenis_dokumen_legalitas_lahan" => $value->legalitas,
+                                    "nomor_dokumen_legalitas_lahan" => $value->no_shm === null ? $value->no_skt : $value->no_shm,
+                                    "nama_tertera_dokumen_legalitas_lahan" => $value->nama_shm === null ? $value->nama_skt : $value->nama_shm,
+                                    "tanggal_terbit_dokumen_legalitas_lahan" => $value->tgl_shm === null ? $value->tgl_skt : $value->tgl_shm,
+                                    "nama_asli_file_dokumen_legalitas_lahan" => $value->scan_shm === null ? $value->scan_skt : $value->scan_shm,
+                                    "nama_file_dokumen_legalitas_lahan" => $value->scan_shm === null ? $value->scan_skt : $value->scan_shm,
+                                    "lokasi_file_dokumen_legalitas_lahan" => $value->scan_shm === null ? $value->scan_skt : $value->scan_shm,
+                                    "polygon_legalitas_lahan" => $polygon_peta,
+                                    "luas_polygon_legalitas_lahan" => $value->luas_hektar,
+                                    "polygon_verifikasi_legalitas_lahan" => NULL,
+                                    "luas_polygon_verifikasi_legalitas_lahan" => NULL,
+                                    "verifikator_verifikasi_legalitas_lahan" => NULL,
+                                    "keterangan_verifikasi_legalitas_lahan" => NULL,
+                                    "created_at" => $now,
+                                    "created_by" => Auth::user()->name,
+                                    "updated_at" => $now,
+                                    "updated_by" => Auth::user()->name,
+                                    "deleted_at" => NULL,
+                                    "deleted_by" => NULL,
+                                ]);
+
+                // Insert Log Legalitas Pekebun Di Migrasiin
+                DB::connection('mysql_rdp')
+                ->table('legalitas_lahan_pekebun_log')
+                ->insert([
+                    'id_legalitas_lahan_pekebun' => $id_legalitas,
+                    'id_proposal' => $id_nomor_proposal,
+                    'log' => "Legalitas Pekebun ".strtoupper(trim($get_data_pekebun_psr_online->nama_pekebun) == null ? NULL : trim($get_data_pekebun_psr_online->nama_pekebun))." (NIK: ".trim($get_data_pekebun_psr_online->no_ktp) == null ? NULL : trim($get_data_pekebun_psr_online->no_ktp).") di migrasi oleh User RDP - ".Auth::user()->email." melalui aplikasi migrasi RDP",
+                    'created_at' => $now,
+                    'created_by' => "RDP - ".Auth::user()->name
+                ]);
+            }
+
+        return redirect()->back();
 
     }
 

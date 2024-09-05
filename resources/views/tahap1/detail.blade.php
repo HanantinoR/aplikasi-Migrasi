@@ -165,14 +165,20 @@
                                                     type="button" data-bs-toggle="collapse"
                                                     data-bs-target="#collapseGeneralLedger" aria-expanded="false"
                                                     aria-controls="collapseGeneralLedger">
-                                                    Data Pekebun Proposal
+                                                    Data Ledger Pekebun {{ $get_data_kelembagaan_pekebun->no_dokumen }}
                                                     <i class="collapse-close fa fa-plus text-xs pt-1 position-absolute end-0 me-3"
                                                         aria-hidden="true"></i>
                                                     <i class="collapse-open fa fa-minus text-xs pt-1 position-absolute end-0 me-3"
                                                         aria-hidden="true"></i>
                                                 </button>
                                             </h5>
-                                            <div id="collapseGeneralLedger" class="accordion-collapse collapse"
+                                            <br>
+                                            <h5>Jumlah Pekebun : {{count($data_pekebun_sudah_rekon)}} Pekebun</h5>
+                                            @php
+                                                $luas_lahan_rekon = $data_pekebun_sudah_rekon->sum('luas_lahan');
+                                            @endphp
+                                            <h5>Luas Lahan : {{number_format($luas_lahan_rekon,4,'.',',')}} Hektar</h5>
+                                            <div id="collapseGeneralLedger" class="accordion-collapse"
                                                 aria-labelledby="headingGeneralLedger"
                                                 data-bs-parent="#accordionGeneralLedger" style="color:black;">
                                                 <div class="accordion-body text-sm opacity-8 text-black">
@@ -196,16 +202,27 @@
                                                                         Luas SK Dirut</th>
                                                                     <th
                                                                         class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                                        Luas Pengembalian</th>
-                                                                    <th
-                                                                        class="text-secondary text-xs font-weight-semibold opacity-7">
                                                                         Di Rekon Oleh</th>
                                                                     <th
                                                                         class="text-secondary text-xs font-weight-semibold opacity-7">
                                                                         Di Rekon Tanggal</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody></tbody>
+                                                            <tbody>
+                                                                @php
+                                                                    $i = 1;
+                                                                @endphp
+                                                                @foreach ($data_pekebun_sudah_rekon as $data_pekebun)
+                                                                <tr>
+                                                                    <td>{{$i++}}</td>
+                                                                    <td>{{$data_pekebun->nama_pekebun}}</td>
+                                                                    <td>{{$data_pekebun->nik_pekebun}}</td>
+                                                                    <td>{{number_format($data_pekebun->luas_lahan,4,'.',',')}}</td>
+                                                                    <td>{{$data_pekebun->created_by}}</td>
+                                                                    <td>{{$data_pekebun->created_at}}</td>
+                                                                </tr>
+                                                                @endforeach
+                                                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
