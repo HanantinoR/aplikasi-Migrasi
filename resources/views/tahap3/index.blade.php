@@ -92,8 +92,7 @@
                                                     {{$proposal->sk_penetapan_dirut ? "Sudah Salur" : "Belum Salur"}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                    <a href='{{route('tahap1.detail',["id_proposal"=>$proposal->id_proposal])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Data Pekebun!</a>
-                                                    <a href='' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
+                                                    <a href='{{route('tahap1.detail',["id_proposal"=>$proposal->id_proposal])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Dokumen Kelembagaan Pekebun!</a>
                                                 </th>
                                             </tr>
                                         @endforeach

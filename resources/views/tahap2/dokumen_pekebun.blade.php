@@ -43,7 +43,7 @@
                                 <div class="col-lg-6">
                                     <div class="h-100">
                                         @php
-                                            dd($get_dokumen_psr_online);
+                                            // dd($get_dokumen_psr_online);
                                         @endphp
                                         <p class="mb-0 font-weight-bold text-sm">
                                             Scan KTP

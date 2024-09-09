@@ -211,7 +211,7 @@
         });
 
         // Lahan Proposal Akun
-        const opt_lahan_proposal = {color: '#0000FF',fillColor: '#0000FF'};
+        const opt_lahan_proposal = {color: '#FFFF00',fillColor: '#FFFF00'};
         let legalitas_lahan_pekebun_proposal = @json($legalitas_lahan_pekebun_proposal);
         let popup_legalitas_lahan_pekebun_proposal = @json($popup_legalitas_lahan_pekebun_proposal);
         let layer_lahan_proposal = {};
