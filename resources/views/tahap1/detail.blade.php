@@ -22,7 +22,18 @@
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">TAHAP 1 -- Rekonsiliasi Pekebun</h6>
                                     <p class="text-sm mb-sm-0">{{ $get_data_kelembagaan_pekebun->no_dokumen }} --
-                                        {{ $get_data_kelembagaan_pekebun->koperasi }}</p>
+                                        {{ $get_data_kelembagaan_pekebun->koperasi }}
+                                    </p>
+                                    <br>
+                                    <a href="https://program-psr.bpdp.or.id/assets/upload_file/proposal/{{ $get_data_kelembagaan_pekebun->sk_penetapan_dirut }}"
+                                        target="blank"
+                                        class="btn btn-sm btn-primary btn-icon align-items-center mb-0 me-2">
+                                        <i class="fa-solid fa-link fa-2xl"></i>
+                                        <span class="btn-inner--text"> Klik Disini Untuk Melihat SK Dirut</span>
+                                    </a>
+                                </div>
+                                <div>
+
                                 </div>
                                 <div class="ms-auto d-flex">
                                     {{-- <div class="input-group input-group-sm ms-auto me-2">
@@ -44,8 +55,8 @@
                                             title="Bilamana Ditemukan Pekebun di SMART-PSR dan PSR Online">
                                             <button type="button"
                                                 class="btn btn-sm btn-info btn-icon d-flex align-items-center mb-0 me-2"
-                                                data-bs-target="#rekonModal"
-                                                onclick="getCheckedRekon()" id="modalRekon">
+                                                data-bs-target="#rekonModal" onclick="getCheckedRekon()"
+                                                id="modalRekon">
                                                 <span class="btn-inner--icon">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                         height="24" viewBox="0 0 24 24" fill="none"
@@ -114,10 +125,12 @@
                                                         <td>{{ $pekebun_psr_online->nama_pekebun }}</td>
                                                         <td>{{ $pekebun_psr_online->no_ktp }}</td>
                                                         <td><input type="checkbox" name="checkbox_pekebun_psr_online"
-                                                                value="{{ $pekebun_psr_online->id_pekebun }}" nik_pekebun_psr_online="{{ $pekebun_psr_online->no_ktp }}" nama_pekebun_psr_online="{{ $pekebun_psr_online->nama_pekebun }}"></td>
+                                                                value="{{ $pekebun_psr_online->id_pekebun }}"
+                                                                nik_pekebun_psr_online="{{ $pekebun_psr_online->no_ktp }}"
+                                                                nama_pekebun_psr_online="{{ $pekebun_psr_online->nama_pekebun }}">
+                                                        </td>
                                                     </tr>
                                                 @endforeach
-
                                             </tbody>
                                         </table>
                                     </div>
@@ -173,11 +186,19 @@
                                                 </button>
                                             </h5>
                                             <br>
-                                            <h5>Jumlah Pekebun : {{count($data_pekebun_sudah_rekon)}} Pekebun</h5>
+                                            <h5>Jumlah Pekebun : {{ count($data_pekebun_sudah_rekon) }} Pekebun</h5>
                                             @php
                                                 $luas_lahan_rekon = $data_pekebun_sudah_rekon->sum('luas_lahan');
                                             @endphp
-                                            <h5>Luas Lahan : {{number_format($luas_lahan_rekon,4,'.',',')}} Hektar</h5>
+                                            <h5>Luas Lahan : {{ number_format($luas_lahan_rekon, 4, '.', ',') }} Hektar
+                                            </h5>
+                                            <a href="https://program-psr.bpdp.or.id/assets/upload_file/proposal/{{ $get_data_kelembagaan_pekebun->sk_penetapan_dirut }}"
+                                                target="blank"
+                                                class="btn btn-sm btn-primary btn-icon align-items-center mb-0 me-2">
+                                                <i class="fa-solid fa-link fa-2xl"></i>
+                                                <span class="btn-inner--text"> Klik Disini Untuk Melihat SK Dirut</span>
+                                            </a>
+
                                             <div id="collapseGeneralLedger" class="accordion-collapse"
                                                 aria-labelledby="headingGeneralLedger"
                                                 data-bs-parent="#accordionGeneralLedger" style="color:black;">
@@ -213,14 +234,15 @@
                                                                     $i = 1;
                                                                 @endphp
                                                                 @foreach ($data_pekebun_sudah_rekon as $data_pekebun)
-                                                                <tr>
-                                                                    <td>{{$i++}}</td>
-                                                                    <td>{{$data_pekebun->nama_pekebun}}</td>
-                                                                    <td>{{$data_pekebun->nik_pekebun}}</td>
-                                                                    <td>{{number_format($data_pekebun->luas_lahan,4,'.',',')}}</td>
-                                                                    <td>{{$data_pekebun->created_by}}</td>
-                                                                    <td>{{$data_pekebun->created_at}}</td>
-                                                                </tr>
+                                                                    <tr>
+                                                                        <td>{{ $i++ }}</td>
+                                                                        <td>{{ $data_pekebun->nama_pekebun }}</td>
+                                                                        <td>{{ $data_pekebun->nik_pekebun }}</td>
+                                                                        <td>{{ number_format($data_pekebun->luas_lahan, 4, '.', ',') }}
+                                                                        </td>
+                                                                        <td>{{ $data_pekebun->created_by }}</td>
+                                                                        <td>{{ $data_pekebun->created_at }}</td>
+                                                                    </tr>
                                                                 @endforeach
                                                             </tbody>
                                                         </table>
@@ -250,22 +272,24 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{route('rekon_tahap_1')}}" method="post" enctype="multipart/form-data" id="postRekon"
-                    onsubmit="submitModalRekon.disabled = true; return true;">
+                <form action="{{ route('rekon_tahap_1') }}" method="post" enctype="multipart/form-data"
+                    id="postRekon" onsubmit="submitModalRekon.disabled = true; return true;">
                     <div class="modal-body">
                         @csrf
                         <label for="kredit" class="col-form-label">Nama Pekebun:</label>
-                        <input type="text" class="form-control" name="nama_pekebun_rekon" id="nama_pekebun_rekon" value=""
-                            form="postRekon" readonly>
+                        <input type="text" class="form-control" name="nama_pekebun_rekon" id="nama_pekebun_rekon"
+                            value="" form="postRekon" readonly>
 
                         <label for="debit" class="col-form-label">NIK:</label>
-                        <input type="text" class="form-control" name="nik_pekebun_rekon" id="nik_pekebun_rekon" value=""
-                            form="postRekon" readonly>
+                        <input type="text" class="form-control" name="nik_pekebun_rekon" id="nik_pekebun_rekon"
+                            value="" form="postRekon" readonly>
                         <br>
                         <h5 style="color: red">Pastikan Data Sudah Benar!!!</h5>
                         <div id="selisih"></div>
-                        <input type="hidden" class="form-control" name="id_pekebun_psr_online" id="id_pekebun_psr_online_rekon" form="postRekon" value="">
-                        <input type="hidden" class="form-control" name="id_pekebun_smart_psr" id="id_pekebun_smart_psr_rekon" form="postRekon" value="">
+                        <input type="hidden" class="form-control" name="id_pekebun_psr_online"
+                            id="id_pekebun_psr_online_rekon" form="postRekon" value="">
+                        <input type="hidden" class="form-control" name="id_pekebun_smart_psr"
+                            id="id_pekebun_smart_psr_rekon" form="postRekon" value="">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
@@ -295,12 +319,14 @@
                     <div class="modal-body">
                         @csrf
                         <label for="kredit" class="col-form-label">Nama Pekebun:</label>
-                        <input type="text" class="form-control" name="nama_pekebun_adjustment" id="nama_pekebun_adjustment" value=""
-                            oninput="ceknama_pekebun()" form="postAdjustment" readonly>
+                        <input type="text" class="form-control" name="nama_pekebun_adjustment"
+                            id="nama_pekebun_adjustment" value="" oninput="ceknama_pekebun()"
+                            form="postAdjustment" readonly>
 
                         <label for="debit" class="col-form-label">NIK:</label>
-                        <input type="text" class="form-control" name="nik_pekebun_adjustment" id="nik_pekebun_adjustment" value=""
-                            oninput="ceknik_pekebun()" form="postAdjustment" readonly>
+                        <input type="text" class="form-control" name="nik_pekebun_adjustment"
+                            id="nik_pekebun_adjustment" value="" oninput="ceknik_pekebun()"
+                            form="postAdjustment" readonly>
                         <br>
                         <h5 style="color: red">Pastikan Data Sudah Benar!!!</h5>
                         <input type="hidden" class="form-control" name="id_transaksiAdjustment"
@@ -335,12 +361,12 @@
                     <div class="modal-body">
                         @csrf
                         <label for="kredit" class="col-form-label">Nama Pekebun:</label>
-                        <input type="text" class="form-control" name="nama_pekebun_adjustment" id="nama_pekebun_adjustment"
-                            oninput="ceknama_pekebun()" form="postTambahTransaksi">
+                        <input type="text" class="form-control" name="nama_pekebun_adjustment"
+                            id="nama_pekebun_adjustment" oninput="ceknama_pekebun()" form="postTambahTransaksi">
 
                         <label for="debit" class="col-form-label">NIK:</label>
-                        <input type="text" class="form-control" name="nik_pekebun_adjustment" id="nik_pekebun_adjustment"
-                            oninput="ceknik_pekebun()" form="postTambahTransaksi">
+                        <input type="text" class="form-control" name="nik_pekebun_adjustment"
+                            id="nik_pekebun_adjustment" oninput="ceknik_pekebun()" form="postTambahTransaksi">
                         <br>
                         <h5 style="color: red">Pastikan Data Sudah Benar!!!</h5>
                     </div>
@@ -364,7 +390,7 @@
         var checkbox_psr_online = $('input[name="checkbox_pekebun_psr_online"]:checked').length;
         var checkbox_smart_psr = $('input[name="checkbox_pekebun_smart_psr"]:checked').length;
 
-        console.log(checkbox_psr_online,checkbox_smart_psr);
+        console.log(checkbox_psr_online, checkbox_smart_psr);
 
 
         if (checkbox_psr_online === 0 && checkbox_smart_psr === 0) {
@@ -394,26 +420,30 @@
         } else {
             let id_psr_online = $('input[name="checkbox_pekebun_psr_online"]:checked')[0]['value'];
             let id_smart_psr = $('input[name="checkbox_pekebun_smart_psr"]:checked')[0]['value'];
-            let nama_pekebun = $('input[name="checkbox_pekebun_psr_online"]:checked')[0].getAttribute('nama_pekebun_psr_online');
-            let nik_pekebun = $('input[name="checkbox_pekebun_psr_online"]:checked')[0].getAttribute('nik_pekebun_psr_online');
+            let nama_pekebun = $('input[name="checkbox_pekebun_psr_online"]:checked')[0].getAttribute(
+                'nama_pekebun_psr_online');
+            let nik_pekebun = $('input[name="checkbox_pekebun_psr_online"]:checked')[0].getAttribute(
+                'nik_pekebun_psr_online');
 
 
             // Set Nama Pekebun di Modal Berdasarkan Checklist
-            $("#nama_pekebun_rekon").attr('value',nama_pekebun);
-            $("#nik_pekebun_rekon").attr('value',nik_pekebun);
+            $("#nama_pekebun_rekon").attr('value', nama_pekebun);
+            $("#nik_pekebun_rekon").attr('value', nik_pekebun);
             // Set NIK Pekebun di Modal Berdasarkan Checklist
             $('#rekonModal').modal('show');
 
-            $('#id_pekebun_psr_online_rekon').attr('value',id_psr_online);
+            $('#id_pekebun_psr_online_rekon').attr('value', id_psr_online);
 
-            $('#id_pekebun_smart_psr_rekon').attr('value',id_smart_psr);
+            $('#id_pekebun_smart_psr_rekon').attr('value', id_smart_psr);
         }
 
     }
     $(document).ready(function() {
 
 
-        $('#tableGeneralLedger').DataTable({});
+        $('#tableGeneralLedger').DataTable({
+            paging: false
+        });
 
     });
 </script>

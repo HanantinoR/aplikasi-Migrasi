@@ -41,7 +41,28 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        /* Style Peta */
+        .layer-peta{
+            margin-right: 10px;
+        }
+        .layer-peta-toggle{
+            border: none;
+            padding: 5px 10px;
+        }
+        .minimize-layer-peta{
+            transform: translateX(-110%);
+        }
+        .minimize-layer-peta .layer-peta-toggle{
+            transform: translateX(6.5em);
+            color: white !important;
+            border: 1px solid white;
+            border-radius: 0.5em;
+            padding: 10px 15px;
+        }
+    </style>
 
 </head>
 
@@ -419,6 +440,197 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Corporate UI Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{asset('/assets/js/corporate-ui-dashboard.min.js?v=1.0.0')}}"></script>
+    {{-- Peta Dibawah Sini --}}
+    <script>
+        // Untuk layer control peta
+        let control_peta = L.Control.extend({
+            options: {
+                position: 'topleft',
+            },
+            onAdd: function(map) {
+                var container = L.DomUtil.create('div', 'navbar-vertical layer-peta minimize-layer-peta');
+                let map_width = $('#map').width();
+                let map_height = $('#map').height();
+                container.innerHTML = `
+                    <div class="card" style="max-width:${map_width-20}px;max-height:${map_height-20}px;">
+                        <div class="card-header pb-0">
+                            <div class="row">
+                                <div class="col">
+                                    <h4>Layer</h4>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="layer-peta-toggle text-lg text-secondary bg-transparent mb-0">
+                                            <i class="fa fa-bars"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mx-2">
+                        <div class="card-body pt-0" style="overflow-y:auto;">
+                            <ul class="navbar-nav">
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                L.DomEvent.disableScrollPropagation(container);
+                L.DomEvent.disableClickPropagation(container);
+
+                return container;
+            },
+        });
+
+        function tampilkan_kategori_layer(nama_kategori_layer,data_kategori_layer,opt) {
+            let id_kategori_layer = nama_kategori_layer.toLowerCase().replaceAll(' ','_').replaceAll(/[<>:"\/\\|()?*]/g,'');
+            let layer = '';
+            if(Object.keys(data_kategori_layer).length > 0){
+                $.each(data_kategori_layer,function(nama_layer,data_layer){
+                    let id_layer = nama_layer.toLowerCase().replace(' ','_');
+                    let warna_layer = data_layer.getLayers().length > 0 ?
+                        (
+                            data_layer.getLayers()[0].options.color ?
+                            data_layer.getLayers()[0].options.color : data_layer.getLayers()[0].options.style.color
+                        ) : opt;
+                    layer += `
+                        <li class="nav-item">
+                            <div class="d-flex py-2">
+                                <label for="${id_layer}" class="form-check-label opacity-8 text-lg mb-0 ms-3 me-3">
+                                    ${nama_layer}
+                                </label>
+                                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                                    <input type="checkbox" id="${id_layer}" class="form-check-input mt-1 ms-auto" style="height:20px;border-color:${warna_layer};background-color:${warna_layer};" checked>
+                                </div>
+                            </div>
+                        </li>
+                    `;
+                });
+            } else {
+                layer += `
+                    <li class="nav-item">
+                        <div class="d-flex py-2">
+                            <span class=" opacity-8 text-lg mb-0 ms-3 me-3">
+                                Data Kosong
+                            </span>
+                        </div>
+                    </li>
+                `;
+            }
+
+            let kategori_layer = `
+                <li class="nav-item">
+                    <a href class="nav-link text-lg font-weight-bolder px-0" data-bs-toggle="collapse" data-bs-target="#${id_kategori_layer}" aria-controls="${id_kategori_layer}" aria-expanded="true">
+                        ${nama_kategori_layer}
+                    </a>
+                    <ul class="list-unstyled collapse show" id="${id_kategori_layer}" aria-labelledby="${id_kategori_layer}">
+                        ${layer}
+                    </ul>
+                </li>
+            `;
+
+            $('.layer-peta .card-body .navbar-nav').append(`
+                ${kategori_layer}
+            `);
+
+            $.each(data_kategori_layer,function(nama_layer,data_layer){
+                let id_layer = nama_layer.toLowerCase().replace(' ','_');
+                let warna_layer = data_layer.getLayers().length > 0 ?
+                    (
+                        data_layer.getLayers()[0].options.color ?
+                        data_layer.getLayers()[0].options.color : data_layer.getLayers()[0].options.style.color
+                    ) : opt;
+                let toggle_layer = document.getElementById(id_layer);
+                L.DomEvent.on(toggle_layer, 'change', function() {
+                    if (toggle_layer.checked) {
+                        map.addLayer(data_layer);
+                        toggle_layer.style.borderColor = warna_layer;
+                        toggle_layer.style.backgroundColor = warna_layer;
+                    } else {
+                        map.removeLayer(data_layer);
+                        toggle_layer.style.borderColor = '#e9ecef';
+                        toggle_layer.style.backgroundColor = 'rgba(33, 37, 41, 0.1)';
+                    }
+                });
+            });
+        }
+
+        function tampilkan_layer(nama_layer,data_layer,opt) {
+            let id_layer = nama_layer.toLowerCase().replace(' ','_');
+            let warna_layer = data_layer.getLayers().length > 0 ?
+                (
+                    data_layer.getLayers()[0].options.color ?
+                    data_layer.getLayers()[0].options.color : data_layer.getLayers()[0].options.style.color
+                ) : opt;
+            $('.layer-peta .card-body .navbar-nav').append(`
+                <li class="nav-item">
+                    <div class="d-flex py-2">
+                        <label for="${id_layer}" class="form-check-label font-weight-bolder opacity-8 text-lg mb-0 ms-0 me-3">
+                            ${nama_layer}
+                        </label>
+                        <div class="form-check form-switch ps-0 ms-auto my-auto">
+                            <input type="checkbox" id="${id_layer}" class="form-check-input mt-1 ms-auto" style="height:20px;border-color:${warna_layer};background-color:${warna_layer};" checked>
+                        </div>
+                    </div>
+                </li>
+            `);
+            let toggle_layer = document.getElementById(id_layer);
+            L.DomEvent.on(toggle_layer, 'change', function() {
+                if (toggle_layer.checked) {
+                    map.addLayer(data_layer);
+                    toggle_layer.style.borderColor = warna_layer;
+                    toggle_layer.style.backgroundColor = warna_layer;
+                } else {
+                    map.removeLayer(data_layer);
+                    toggle_layer.style.borderColor = '#e9ecef';
+                    toggle_layer.style.backgroundColor = 'rgba(33, 37, 41, 0.1)';
+                }
+            });
+        }
+
+        // Convert tikor ke format GeoJSON
+        function to_geo_json(polygon, popup_body) {
+            if(polygon[0][0] < 80){
+                return {
+                    type: "Feature",
+                    properties: {"name": popup_body} || {},
+                    geometry: {
+                        type: "Polygon",
+                        coordinates: [polygon.map(coord => [coord[1], coord[0]])]
+                    }
+                };
+            }else{
+                return {
+                    type: "Feature",
+                    properties: {"name": popup_body} || {},
+                    geometry: {
+                        type: "Polygon",
+                        coordinates: [polygon.map(coord => [coord[0], coord[1]])]
+                    }
+                };
+            }
+        }
+
+        // Bind popup ke feature, atur sesuai property
+        function on_each_feature(feature, layer) {
+            if (feature.properties && feature.properties.name) {
+                layer.bindPopup(feature.properties.name);
+            }
+        }
+
+        // Map polygon ke layer, layer ke group
+        function buat_layer_group_polygon(group_polygon,opt,popup){
+            let layer_group_polygon = L.layerGroup();
+            let geojson_polygon = popup ? group_polygon.map((polygon,index) => to_geo_json(polygon,popup[index])) : group_polygon.map(to_geo_json);
+            geojson_polygon.forEach(geojson => {
+                var layer = L.geoJSON(geojson, {
+                    style: opt || {color: "blue",fillColor: "blue"},
+                    onEachFeature: on_each_feature,
+                });
+                layer_group_polygon.addLayer(layer);
+            });
+            return layer_group_polygon;
+        }
+    </script>
 </body>
 
 </html>

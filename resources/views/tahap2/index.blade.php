@@ -21,7 +21,7 @@
                             <div class="d-sm-flex align-items-center mb-3">
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">TAHAP 2</h6>
-                                    <p class="text-sm mb-sm-0">Rekonsiliasi Legalitas dan Luas Lahan Pekebun</p>
+                                    <p class="text-sm mb-sm-0"><strong>Rekonsiliasi DOKUMEN Legalitas dan Kelengkapan Administrasi Pekebun</strong></p>
                                 </div>
                                 <div class="ms-auto d-flex">
                                     {{-- <div class="input-group input-group-sm ms-auto me-2">
@@ -83,16 +83,16 @@
                                                     {{$no++}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                    {{$proposal->koperasi}}
+                                                    {{$proposal->nama_kelembagaan_pekebun}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                    {{$proposal->no_dokumen}}
+                                                    {{$proposal->nomor_proposal}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
                                                     Status
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                    <a href='{{route('tahap1.detail',["id_proposal"=>$proposal->id_proposal])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Data Pekebun!</a>
+                                                    <a href='{{route('tahap2.detail',["id_proposal"=>$proposal->id])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Dokumen Pekebun!</a>
                                                     <a href='' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
                                                 </th>
                                             </tr>

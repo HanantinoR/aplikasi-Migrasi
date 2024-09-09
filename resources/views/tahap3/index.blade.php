@@ -7,8 +7,8 @@
                 <div class="col-lg-12 col-md-12">
                     <div class="d-md-flex align-items-center mb-3 mx-2">
                         <div class="mb-md-0 mb-3">
-                            <h3 class="font-weight-bold mb-0">Hello, Noah</h3>
-                            <p class="mb-0">Apps you might like!</p>
+                            <h3 class="font-weight-bold mb-0">Hello, {{Auth::user()->name}}</h3>
+                            <p class="mb-0">Semangat Rekonnyaaaa!</p>
                         </div>
                     </div>
                 </div>
@@ -20,8 +20,8 @@
                         <div class="card-header border-bottom pb-0">
                             <div class="d-sm-flex align-items-center mb-3">
                                 <div>
-                                    <h6 class="font-weight-semibold text-lg mb-0">TAHAP 1</h6>
-                                    <p class="text-sm mb-sm-0">These are details about the last transactions</p>
+                                    <h6 class="font-weight-semibold text-lg mb-0">TAHAP 3</h6>
+                                    <p class="text-sm mb-sm-0"><strong>Rekonsiliasi Kelengkapan Administrasi Lembaga, dan Proposal</strong></p>
                                 </div>
                                 <div class="ms-auto d-flex">
                                     {{-- <div class="input-group input-group-sm ms-auto me-2">
@@ -53,22 +53,50 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table align-items-center justify-content-center mb-0" id="tableTahap1">
+                                <table class="table align-items-center justify-content-center mb-0" id="tableTahap3">
                                     <thead class="bg-gray-100">
                                         <tr>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                No</th>
+                                                No
+                                            </th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                Nama Lembaga Pekebun</th>
+                                                Nama Lembaga Pekebun
+                                            </th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                Nomor Proposal</th>
-                                            {{-- <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                Status</th> --}}
+                                                Nomor Proposal
+                                            </th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                Aksi</th>
+                                                Status
+                                            </th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                Aksi
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $no = 1;
+                                        @endphp
+                                        @foreach ( $get_data_kelembagaan_pekebun as $proposal )
+                                            <tr>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    {{$no++}}
+                                                </th>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    {{$proposal->koperasi}}
+                                                </th>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    {{$proposal->no_dokumen}}
+                                                </th>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    {{$proposal->sk_penetapan_dirut ? "Sudah Salur" : "Belum Salur"}}
+                                                </th>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    <a href='{{route('tahap1.detail',["id_proposal"=>$proposal->id_proposal])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Data Pekebun!</a>
+                                                    <a href='' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
+                                                </th>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -82,30 +110,8 @@
 </x-app-layout>
 <script>
     $(document).ready(function(){
-        let data = [
-            [
-                "1",
-                "Test1",
-                "12345",
-                `<a href='{{route('tahap3.detail',["id"=>1])}}' type="button" class="btn btn-sm btn-info m-0 ">lihat</a>
-                <a href="" class="btn btn-success">
-                    download Excel
-                    <i class="fa fa-arrow-down"></i>
-                </a>`
-            ],
-            [
-                "2",
-                "Test2",
-                "123456",
-                `
-                <a href='{{route('tahap3.detail',["id"=>1])}}' type="button" class="btn btn-sm btn-info m-0 ">lihat</a>
-                <a href='' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
-                `
-            ]
-        ]
+            $('#tableTahap3').DataTable({
 
-            $('#tableTahap1').DataTable({
-                data:data
             });
     });
 </script>
