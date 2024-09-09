@@ -619,6 +619,14 @@ class TahapController extends Controller
             }
         }
 
+        foreach ($legalitas_lahan_pekebun_proposal_lain as $key => $value) {
+            if ($value === null) {
+                unset($legalitas_lahan_pekebun_proposal_lain[$key]);
+            }
+        }
+
+        $legalitas_lahan_pekebun_proposal_lain = array_values($legalitas_lahan_pekebun_proposal_lain);
+
         return view('tahap4.detail')->with(compact('get_data_kelembagaan_pekebun','data_pekebun_sudah_rekon','legalitas_lahan_pekebun_proposal_lain','legalitas_lahan_pekebun_proposal','popup_legalitas_lahan_pekebun_proposal'));
     }
 }
