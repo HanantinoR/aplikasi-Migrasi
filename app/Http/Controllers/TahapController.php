@@ -21,7 +21,7 @@ class TahapController extends Controller
                                         ->table('tb_proposal')
                                         ->whereIn('tb_proposal.id_proposal',$list_id_proposal_psr_online)
                                         ->join('tb_koperasi','tb_koperasi.id_koperasi','=','tb_proposal.id_koperasi')
-                                        ->select('tb_proposal.id_proposal','tb_proposal.no_dokumen','tb_koperasi.koperasi','tb_proposal.sk_penetapan_dirut')
+                                        ->select('tb_proposal.id_proposal','tb_proposal.no_dokumen','tb_koperasi.koperasi','tb_proposal.sk_penetapan_dirut','tb_koperasi.provinsi','tb_koperasi.kabupaten')
                                         ->orderBy('tb_proposal.id_proposal','ASC')
                                         ->whereNotNull('no_sk_dirut')
                                         ->get();

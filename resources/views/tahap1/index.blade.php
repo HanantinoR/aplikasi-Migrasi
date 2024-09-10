@@ -7,8 +7,8 @@
                 <div class="col-lg-12 col-md-12">
                     <div class="d-md-flex align-items-center mb-3 mx-2">
                         <div class="mb-md-0 mb-3">
-                            <h3 class="font-weight-bold mb-0">Hello, Noah</h3>
-                            <p class="mb-0">Apps you might like!</p>
+                            <h3 class="font-weight-bold mb-0">Hello, {{ Auth::user()->name }}</h3>
+                            <p class="mb-0">Semangat Rekonnyaaaa!</p>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,10 @@
                                                 Nomor Proposal
                                             </th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                Status
+                                                Provinsi
+                                            </th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                Kabupaten
                                             </th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">
                                                 Aksi
@@ -89,7 +92,10 @@
                                                     {{$proposal->no_dokumen}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
-                                                    {{$proposal->sk_penetapan_dirut ? "Sudah Salur" : "Belum Salur"}}
+                                                    {{$proposal->provinsi}}
+                                                </th>
+                                                <th class="text-secondary text-xs font-weight-semibold opacity-7">
+                                                    {{$proposal->kabupaten}}
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
                                                     <a href='{{route('tahap1.detail',["id_proposal"=>$proposal->id_proposal])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Data Pekebun!</a>
