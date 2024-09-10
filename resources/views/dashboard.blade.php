@@ -444,7 +444,25 @@
                                 <div class="col-12">
                                     <div class="w-100">
                                         <p class="text-lg text-secondary mb-1 text-white">Pending Tahap 1</p>
-                                        <h4 class="mb-2 font-weight-bold text-white">11678</h4>
+                                        @php
+                                                $data_pekebun_sudah_rekon = DB::connection('mysql_rdp')
+                                                    ->table('pekebun')
+                                                    ->count();
+
+                                                $id_proposal_psr_online = DB::connection('mysql_rdp')
+                                                                            ->table('lookup_proposal_kelembagaan_pekebun')
+                                                                            ->whereNotNull('id_proposal_smart_psr')
+                                                                            ->pluck('id_proposal_psr_online');
+
+                                                $jumlah_pekebun = DB::connection('mysql_psr')
+                                                                    ->table('tb_pekebun')
+                                                                    ->whereIn('id_proposal',$id_proposal_psr_online)
+                                                                    ->count();
+
+
+                                                $sisa_pekebun = $jumlah_pekebun - $data_pekebun_sudah_rekon;
+                                        @endphp
+                                        <h4 class="mb-2 font-weight-bold text-white">{{$sisa_pekebun}}</h4>
                                         <div class="d-flex align-items-center m-0" >
                                             <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
@@ -482,7 +500,7 @@
                                 <div class="col-12">
                                     <div class="w-100">
                                         <p class="text-sm text-secondary mb-1 text-white">Selesai Tahap 1</p>
-                                        <h4 class="mb-2 font-weight-bold text-white">125</h4>
+                                        <h4 class="mb-2 font-weight-bold text-white">{{$data_pekebun_sudah_rekon}}</h4>
                                         <div class="d-flex align-items-center m-0" >
                                             <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
