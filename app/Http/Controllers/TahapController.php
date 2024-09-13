@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Auth;
 use DB;
+use \avadim\FastExcelWriter\Excel;
 
 class TahapController extends Controller
 {
@@ -385,6 +386,122 @@ class TahapController extends Controller
 
         return redirect()->back();
 
+    }
+
+    public function excel_tahap_1(){
+        $get_data_list_proposal = DB::connection('mysql_rdp')
+                            ->table('lookup_proposal_kelembagaan_pekebun')
+                            ->whereNotNull('id_proposal_smart_psr')
+                            ->get();
+
+        $list_id_proposal_psr_online = $get_data_list_proposal->pluck('id_proposal_psr_online');
+        $list_id_proposal_smart_psr = $get_data_list_proposal->pluck('id_proposal_smart_psr');
+
+        $data_pekebun_psr_online = DB::connection('mysql_psr')
+                                ->table('tb_pekebun')
+                                ->whereIn('id_proposal',$list_id_proposal_psr_online)
+                                ->orderBy('id_proposal','ASC')
+                                ->select('id_proposal',DB::raw('COUNT(id_proposal) as jumlah_pekebun_psr_online'))
+                                ->groupBy('id_proposal')
+                                ->get();
+
+        $data_pekebun_psr_online = $data_pekebun_psr_online->keyBy('id_proposal');
+
+        $data_pekebun_smart_psr = DB::connection('mysql_smart_psr')
+                                ->table('tbl_master_pekebun')
+                                ->whereIn('id_proposal',$list_id_proposal_smart_psr)
+                                ->orderBy('id_proposal','ASC')
+                                ->select('id_proposal',DB::raw('COUNT(id_proposal) as jumlah_pekebun_smart_psr'))
+                                ->groupBy('id_proposal')
+                                ->get();
+
+        foreach ($data_pekebun_smart_psr as $key => $value) {
+            $data_pekebun_smart_psr[$key]->id_proposal_psr_online = $get_data_list_proposal->where('id_proposal_smart_psr','=',$value->id_proposal)->value('id_proposal_psr_online');
+        }
+
+        $data_pekebun_smart_psr = $data_pekebun_smart_psr->keyBy('id_proposal_psr_online');
+
+        $get_data_kelembagaan_pekebun = DB::connection('mysql_psr')
+                                        ->table('tb_proposal')
+                                        ->whereIn('tb_proposal.id_proposal',$list_id_proposal_psr_online)
+                                        ->join('tb_koperasi','tb_koperasi.id_koperasi','=','tb_proposal.id_koperasi')
+                                        ->select('tb_proposal.id_proposal','tb_proposal.no_dokumen','tb_koperasi.koperasi','sk_penetapan_dirut','tb_koperasi.provinsi','tb_koperasi.kabupaten','tb_proposal.tgl_sk_dirut')
+                                        ->orderBy('tb_proposal.no_dokumen','ASC')
+                                        ->get();
+
+        $get_id_hasil_rekon =   DB::connection('mysql_rdp')
+                                ->table('lookup_pekebun_proposal')
+                                ->select('id_proposal_psr_online',DB::raw('COUNT(id_proposal_psr_online) as jumlah_pekebun_psr_online_rekon'))
+                                ->groupBy('id_proposal_psr_online')
+                                ->get();
+
+        $get_id_hasil_rekon = $get_id_hasil_rekon->keyBy('id_proposal_psr_online');
+
+        // dd($get_id_hasil_rekon);
+
+        $data_pekebun_sudah_rekon = DB::connection('mysql_rdp')
+                            ->table('legalitas_lahan_pekebun')
+                            ->join('proposal','proposal.id','=','legalitas_lahan_pekebun.id_proposal')
+                            ->select('nomor_proposal','id_proposal',DB::raw('SUM(luas_polygon_legalitas_lahan) as total_lahan_rekon'))
+                            ->groupBy('id_proposal','nomor_proposal')
+                            ->get();
+
+        foreach ($data_pekebun_sudah_rekon as $key => $value) {
+            $data_pekebun_sudah_rekon[$key]->id_proposal_psr_online = $get_data_kelembagaan_pekebun->where('no_dokumen','=',$value->nomor_proposal)->value('id_proposal');
+        }
+
+        $data_pekebun_sudah_rekon = $data_pekebun_sudah_rekon->keyBy('id_proposal_psr_online');
+
+        $nomor = 1;
+        $data_excel = array();
+        foreach ($get_data_kelembagaan_pekebun as $key => $value) {
+            // dd($get_id_hasil_rekon[$value->id_proposal]->jumlah_pekebun_psr_online_rekon);
+            $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_psr_online = $data_pekebun_psr_online[$value->id_proposal]->jumlah_pekebun_psr_online;
+            $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_smart_psr = $data_pekebun_smart_psr[$value->id_proposal]->jumlah_pekebun_smart_psr;
+            @$get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon = $get_id_hasil_rekon[$value->id_proposal]->jumlah_pekebun_psr_online_rekon;
+            @$get_data_kelembagaan_pekebun[$key]->luas_lahan_rekon = $data_pekebun_sudah_rekon[$value->id_proposal]->total_lahan_rekon;
+            if(strtotime($value->tgl_sk_dirut) < strtotime('2020-06-01')){
+                $uang = 25000000;
+            }else{
+                $uang = 30000000;
+            }
+            @$dana_ppks = $data_pekebun_sudah_rekon[$value->id_proposal]->total_lahan_rekon * $uang;
+            // dd($value);
+            $data_excel[] = [$nomor++,$value->koperasi,$value->no_dokumen,$value->provinsi,$value->kabupaten,$get_data_kelembagaan_pekebun[$key]->luas_lahan_rekon,$dana_ppks,$get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon,($get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_psr_online - $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon),($get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_smart_psr - $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon)];
+        }
+
+        $excel = Excel::create(['Sheet1']);
+        $sheet = $excel->sheet();
+        $sheet->setColWidths(
+            [
+                5,75,17,36,38,18,19,15,20,25
+            ]
+        );
+        // Write heads
+        $sheet->writeRow(['No', 'Nama Kelembagaan Pekebun', 'Nomor Proposal','Provinsi','Kabupaten','Luas Lahan SK Dirut','Dana PPKS','Jumlah Pekebun','Outlier PSR Online (Kiri)','Outlier SMART-PSR (Kanan)']);
+
+        // Write data
+        $colFormats = [
+            '0',
+            '@',
+            '@',
+            '@',
+            '@',
+            '#,##0.0000;[Red]-#,##0.0000',
+            '_-[$Rp-3809]*' . chr(20) . '#,##0_-;[Red]-[$Rp-3809]*' . chr(20) . '#,##0_-;_-[$Rp-3809]*' . chr(20) . '"-"_-;_-@_-',
+            '0',
+            '0',
+            '0'
+        ];
+        $sheet->setColFormats($colFormats);
+        foreach($data_excel as $rowData) {
+            $rowOptions = [
+                'height' => 20,
+            ];
+            $sheet->writeRow($rowData, $rowOptions);
+        }
+
+        $excel->download('Outstanding Rekon Pekebun Per '.date('Y_m_d H_i_s').'.xlsx')->deleteAfterSend('true');
     }
 
     public function index2()

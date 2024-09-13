@@ -32,6 +32,7 @@ route::group(['middleware'=> 'auth'],function(){
     //Tahap 1
     route::get('/tahap1',[TahapController::class,'index1'])->name('tahap.1');
     route::get('/tahap1/{id_proposal}',[TahapController::class,'detail1'])->name('tahap1.detail');
+    route::get('/excel/tahap1',[TahapController::class,'excel_tahap_1'])->name('tahap1.excel');
     route::post('/tahap1/post/rekon',[TahapController::class,'post_rekon_tahap_1'])->name('rekon_tahap_1');
 
     //Tahap 2
