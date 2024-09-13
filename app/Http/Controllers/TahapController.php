@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Auth;
 use DB;
+use Response;
 use \avadim\FastExcelWriter\Excel;
 
 class TahapController extends Controller
@@ -437,8 +438,6 @@ class TahapController extends Controller
 
         $get_id_hasil_rekon = $get_id_hasil_rekon->keyBy('id_proposal_psr_online');
 
-        // dd($get_id_hasil_rekon);
-
         $data_pekebun_sudah_rekon = DB::connection('mysql_rdp')
                             ->table('legalitas_lahan_pekebun')
                             ->join('proposal','proposal.id','=','legalitas_lahan_pekebun.id_proposal')
@@ -455,7 +454,6 @@ class TahapController extends Controller
         $nomor = 1;
         $data_excel = array();
         foreach ($get_data_kelembagaan_pekebun as $key => $value) {
-            // dd($get_id_hasil_rekon[$value->id_proposal]->jumlah_pekebun_psr_online_rekon);
             $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_psr_online = $data_pekebun_psr_online[$value->id_proposal]->jumlah_pekebun_psr_online;
             $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_smart_psr = $data_pekebun_smart_psr[$value->id_proposal]->jumlah_pekebun_smart_psr;
             @$get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon = $get_id_hasil_rekon[$value->id_proposal]->jumlah_pekebun_psr_online_rekon;
@@ -466,7 +464,6 @@ class TahapController extends Controller
                 $uang = 30000000;
             }
             @$dana_ppks = $data_pekebun_sudah_rekon[$value->id_proposal]->total_lahan_rekon * $uang;
-            // dd($value);
             $data_excel[] = [$nomor++,$value->koperasi,$value->no_dokumen,$value->provinsi,$value->kabupaten,$get_data_kelembagaan_pekebun[$key]->luas_lahan_rekon,$dana_ppks,$get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon,($get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_psr_online - $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon),($get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_smart_psr - $get_data_kelembagaan_pekebun[$key]->jumlah_pekebun_rekon)];
         }
 
@@ -478,7 +475,6 @@ class TahapController extends Controller
             ]
         );
         // Write heads
-        $sheet->writeRow(['No', 'Nama Kelembagaan Pekebun', 'Nomor Proposal','Provinsi','Kabupaten','Luas Lahan SK Dirut','Dana PPKS','Jumlah Pekebun','Outlier PSR Online (Kiri)','Outlier SMART-PSR (Kanan)']);
 
         // Write data
         $colFormats = [
@@ -494,14 +490,16 @@ class TahapController extends Controller
             '0'
         ];
         $sheet->setColFormats($colFormats);
-        foreach($data_excel as $rowData) {
-            $rowOptions = [
-                'height' => 20,
-            ];
-            $sheet->writeRow($rowData, $rowOptions);
-        }
+        $sheet->writeRow(['No', 'Nama Kelembagaan Pekebun', 'Nomor Proposal','Provinsi','Kabupaten','Luas Lahan SK Dirut','Dana PPKS','Jumlah Pekebun','Outlier PSR Online (Kiri)','Outlier SMART-PSR (Kanan)']);
 
-        $excel->download('Outstanding Rekon Pekebun Per '.date('Y_m_d H_i_s').'.xlsx')->deleteAfterSend('true');
+        foreach($data_excel as $rowData) {
+            $sheet->writeRow($rowData);
+        }
+        $filename = 'Outstanding Rekon Pekebun Per '.date('Y_m_d H_i_s').'.xlsx';
+        $excel->save($filename);
+
+        return Response::download($filename)->deleteFileAfterSend(true);
+
     }
 
     public function index2()
