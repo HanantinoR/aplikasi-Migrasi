@@ -174,9 +174,19 @@
                                         <p class="mb-0 font-weight-bold text-sm">
                                             Jenis Kelamin Pekebun
                                         </p>
+                                        @php
+                                            $jenis_kelamin = $get_data_pekebun->jenis_kelamin_pekebun;
+                                            if ($jenis_kelamin == 1) {
+                                                $jenis_kelamin = "Laki-Laki";
+                                            }elseif ($jenis_kelamin == 2) {
+                                                $jenis_kelamin = "Perempuan";
+                                            }else{
+                                                // Do Nothing
+                                            }
+                                        @endphp
                                         <h6 class="mb-1">
                                             <input type="text" class="form form-control"
-                                                value="{{ @$get_data_pekebun->jenis_kelamin_pekebun }}">
+                                                value="{{ @$jenis_kelamin }}">
                                         </h6>
                                         <p id="error_jenis_kelamin_pekebun_sesuai" class="text-danger text-xs pt-1"
                                             style="display:none;"></p>
