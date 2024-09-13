@@ -375,7 +375,7 @@ class TahapController extends Controller
                 DB::connection('mysql_rdp')
                 ->table('legalitas_lahan_pekebun_log')
                 ->insert([
-                    'id_legalitas_lahan_pekebuna' => $id_legalitas,
+                    'id_legalitas_lahan_pekebun' => $id_legalitas,
                     'id_proposal' => $id_nomor_proposal,
                     'log' => "Legalitas Pekebun ".strtoupper(trim($get_data_pekebun_psr_online->nama_pekebun) == null ? NULL : trim($get_data_pekebun_psr_online->nama_pekebun))." (NIK: ".trim($get_data_pekebun_psr_online->no_ktp) == null ? NULL : trim($get_data_pekebun_psr_online->no_ktp).") di migrasi oleh User RDP - ".Auth::user()->email." melalui aplikasi migrasi RDP",
                     'created_at' => $now,
