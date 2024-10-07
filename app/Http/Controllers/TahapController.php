@@ -251,13 +251,14 @@ class TahapController extends Controller
 
         if ($cek_nik_udah_kedaftar_apa_belom === null) {
             // Insert ke Table pekebun
+            $tanggal_lahir_pekebun = trim($get_data_pekebun_psr_online->tgl_lahir) == null ? NULL : trim($get_data_pekebun_psr_online->tgl_lahir);
             $id_pekebun = DB::connection('mysql_rdp')
             ->table('pekebun')
             ->insertGetId([
                 "nik_pekebun" => trim($get_data_pekebun_psr_online->no_ktp) == null ? NULL : trim($get_data_pekebun_psr_online->no_ktp),
                 "kk_pekebun" => trim($get_data_pekebun_psr_online->no_kk) == null ? NULL : trim($get_data_pekebun_psr_online->no_kk),
                 "nama_pekebun" => strtoupper(trim($get_data_pekebun_psr_online->nama_pekebun) == null ? NULL : trim($get_data_pekebun_psr_online->nama_pekebun)),
-                "tanggal_lahir_pekebun" => trim($get_data_pekebun_psr_online->tgl_lahir) == null ? NULL : trim($get_data_pekebun_psr_online->tgl_lahir),
+                "tanggal_lahir_pekebun" => $tanggal_lahir_pekebun === "0000-00-00" ? null : $tanggal_lahir_pekebun,
                 "jenis_kelamin_pekebun" => trim($get_data_pekebun_psr_online->jenis_kelamin) == null ? NULL : trim($get_data_pekebun_psr_online->jenis_kelamin),
                 "status_pernikahan_pekebun" => trim($get_data_pekebun_psr_online->status_pernikahan) == null ? NULL : trim($get_data_pekebun_psr_online->status_pernikahan),
                 "nomor_hp_pekebun" => trim($get_data_pekebun_psr_online->hp_pekebun) == null ? NULL : trim($get_data_pekebun_psr_online->hp_pekebun),
