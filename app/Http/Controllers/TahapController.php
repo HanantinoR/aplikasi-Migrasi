@@ -667,9 +667,11 @@ class TahapController extends Controller
                               ->whereIn('id_pekebun',$list_id_pekebun_sudah_rekon)
                               ->where('id_proposal','=',$id_proposal)
                               ->get();
+
+        // dd($get_data_legalitas);
         foreach ($get_data_legalitas as $key => $value) {
             $data_pekebun_sudah_rekon[$value->id_pekebun]->luas_lahan += $value->luas_polygon_legalitas_lahan;
-            if($value->polygon_legalitas_lahan === null){
+            if($value->polygon_legalitas_lahan === null || $value->polygon_legalitas_lahan == ""){
                 $data_pekebun_sudah_rekon[$value->id_pekebun]->tikor_zoom = "Tidak Bisa Zoom";
             }else{
                 $list_tikor = json_decode($value->polygon_legalitas_lahan);

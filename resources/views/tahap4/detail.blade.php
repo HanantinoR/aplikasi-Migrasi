@@ -237,13 +237,12 @@
         tampilkan_kategori_layer('Lahan Proposal',layer_lahan_proposal,opt_lahan_proposal.color);
 
         // Lahan Proposal Akun Lain
-        const opt_lahan_proposal_lain = {color: 'red',fillColor: 'red'};
-        let legalitas_lahan_pekebun_proposal_lain = @json($legalitas_lahan_pekebun_proposal_lain);
-        console.log(legalitas_lahan_pekebun_proposal_lain);
+        // const opt_lahan_proposal_lain = {color: 'red',fillColor: 'red'};
+        // let legalitas_lahan_pekebun_proposal_lain = @json($legalitas_lahan_pekebun_proposal_lain);
 
-        let layer_lahan_proposal_lain = buat_layer_group_polygon(legalitas_lahan_pekebun_proposal_lain,opt_lahan_proposal_lain);
-        map.addLayer(layer_lahan_proposal_lain);
-        tampilkan_layer('Lahan Proposal Lain',layer_lahan_proposal_lain,opt_lahan_proposal_lain.color);
+        // let layer_lahan_proposal_lain = buat_layer_group_polygon(legalitas_lahan_pekebun_proposal_lain,opt_lahan_proposal_lain);
+        // map.addLayer(layer_lahan_proposal_lain);
+        // tampilkan_layer('Lahan Proposal Lain',layer_lahan_proposal_lain,opt_lahan_proposal_lain.color);
 
         // map.addLayer(layer_placeholder_1);
         // map.addLayer(layer_placeholder_2);

@@ -64,7 +64,19 @@ foreach ($hasil_get_proposal_rekon as $key => $row) {
 $string_array_id_proposal_psr = implode(",", $array_id_proposal_psr);
 $string_array_id_proposal_smart_psr = implode(",", $array_id_proposal_smart_psr);
 
-$query_get_pekebun_proposal_psr_online = 'SELECT * FROM tb_pekebun WHERE id_proposal IN (' . $string_array_id_proposal_psr . ') ORDER BY id_proposal ASC LIMIT 50000 OFFSET 100000';
+$query_get_pekebun_udah_rekon = 'SELECT id_pekebun_psr_online FROM `lookup_pekebun_proposal` GROUP BY id_pekebun_psr_online ORDER BY id_pekebun_psr_online ASC;';
+$hasil_get_pekebun_udah_rekon = mysqli_query($conn_rdp, $query_get_pekebun_udah_rekon);
+$array_pekebun_udah_rekon = array();
+foreach ($hasil_get_pekebun_udah_rekon as $key => $value) {
+    array_push($array_pekebun_udah_rekon,$value['id_pekebun_psr_online']);
+}
+$string_array_id_pekebun_udah_rekon = implode(",", $array_pekebun_udah_rekon);
+// var_dump($string_array_id_pekebun_udah_rekon);
+// exit;
+
+$query_get_pekebun_proposal_psr_online = 'SELECT * FROM tb_pekebun WHERE id_proposal IN (' . $string_array_id_proposal_psr . ') AND id_pekebun NOT IN ('.$string_array_id_pekebun_udah_rekon.') ORDER BY id_proposal';
+// var_dump($query_get_pekebun_proposal_psr_online);
+// exit;
 
 //Jalankan Query CekMT940PenyaluranBPDP sama Biar Gatokinnya Enak Jadi Engga Lemodh Query Group No Proposalnya Maszeh
 $hasil_cek_get_pekebun_proposal_psr_online = mysqli_query($conn_psr_online, $query_get_pekebun_proposal_psr_online);
@@ -73,6 +85,7 @@ $array_pekebun = array();
 $list_proposal_data_lookup_lengkap = array();
 $total_data_pekebun = $hasil_cek_get_pekebun_proposal_psr_online->num_rows;
 $array_hasil_cek_get_pekebun_proposal_psr_online = mysqli_fetch_all($hasil_cek_get_pekebun_proposal_psr_online, MYSQLI_ASSOC);
+
 foreach ($array_hasil_cek_get_pekebun_proposal_psr_online as $key => $row) {
     $now = date('Y-m-d H:i:s');
     if ($array_lookup_by_id_proposal[$row['id_proposal']] === null) {
@@ -89,7 +102,7 @@ foreach ($array_hasil_cek_get_pekebun_proposal_psr_online as $key => $row) {
         $row['nama_pekebun'] = str_replace(",", "\,", $row['nama_pekebun']);
         $row['nama_pekebun'] = str_replace('"', '\"', $row['nama_pekebun']);
 
-        $query_get_pekebun_proposal_smart_psr = 'SELECT id,id_proposal,nik,nama_pekebun,luas_hektar FROM tbl_master_pekebun WHERE id_proposal = "' . $row['id_proposal_smart_psr'] . '" AND nik = "' . $row['no_ktp'] . '" AND nama_pekebun = "' . $row['nama_pekebun'] . '" ORDER BY id_proposal ASC LIMIT 1';
+        $query_get_pekebun_proposal_smart_psr = 'SELECT id,id_proposal,nik,nama_pekebun,luas_hektar FROM tbl_master_pekebun WHERE id_proposal = "' . $row['id_proposal_smart_psr'] . '" AND nik = "' . $row['no_ktp'] . '" ORDER BY id_proposal ASC LIMIT 1';
         $hasil_cek_get_pekebun_proposal_smart_psr = mysqli_query($conn_smart_psr, $query_get_pekebun_proposal_smart_psr);
 
         if ($hasil_cek_get_pekebun_proposal_smart_psr->num_rows == 0) {

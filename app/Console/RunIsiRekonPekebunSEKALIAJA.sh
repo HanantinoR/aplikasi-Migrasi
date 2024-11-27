@@ -6,4 +6,5 @@ echo "RUNNING FETCH SCRIPT"
 #/var/www/html/psr2/app/Http/Middleware/MT940/DontRunFetchMT940Transactions.php
 #php -F /var/www/html/psr2/app/Http/Middleware/MT940/DontRunFetchMT940Transactions.php
 #php -r 'include("/var/www/html/psr2/app/Http/Middleware/MT940/DontRunFetchMT940Transactions.php"); asd();'
-php -f DontRunIsiRekonPekebunSekaliAja.php
+#php -f DontRunIsiRekonPekebunSekaliAja.php
+php -f DontRunIsiRekonPekebunSekaliAjaReogNamaKelarinDuluRekonNIK.php
