@@ -464,7 +464,7 @@
                                         @endphp
                                         <h4 class="mb-2 font-weight-bold text-white">{{$sisa_pekebun}}</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap1" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -502,7 +502,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Selesai Tahap 1</p>
                                         <h4 class="mb-2 font-weight-bold text-white">{{$data_pekebun_sudah_rekon}}</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap1" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -538,7 +538,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Pending Tahap 2</p>
                                         <h4 class="mb-2 font-weight-bold text-white">11378</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap2" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -574,7 +574,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Selesai Tahap 2</p>
                                         <h4 class="mb-2 font-weight-bold text-white">110</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap2" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -607,7 +607,7 @@
                                         <p class="text-lg text-secondary mb-1 text-white">Pending Tahap 3</p>
                                         <h4 class="mb-2 font-weight-bold text-white">11678</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap3" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -645,7 +645,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Selesai Tahap 3</p>
                                         <h4 class="mb-2 font-weight-bold text-white">125</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap3" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -681,7 +681,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Pending Tahap 4</p>
                                         <h4 class="mb-2 font-weight-bold text-white">11378</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap4" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -717,7 +717,7 @@
                                         <p class="text-sm text-secondary mb-1 text-white">Selesai Tahap 4</p>
                                         <h4 class="mb-2 font-weight-bold text-white">110</h4>
                                         <div class="d-flex align-items-center m-0" >
-                                            <a href="" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
+                                            <a href="/tahap4" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                                 <span class="btn-inner--icon">
                                                     <svg width="14" height="14" viewBox="0 0 14 14"
                                                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
