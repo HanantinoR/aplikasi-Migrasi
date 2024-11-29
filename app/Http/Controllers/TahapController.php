@@ -573,10 +573,14 @@ class TahapController extends Controller
         ->where('id_pekebun_rdp','=',$id_pekebun)
         ->first();
 
-        $get_dokumen_psr_online =   DB::connection('mysql_psr')
+        $get_nik_psr_online =    DB::connection('mysql_psr')
         ->table('tb_pekebun')
         ->where('id_pekebun','=',$get_id_hasil_rekon->id_pekebun_psr_online)
-        ->where('id_proposal','=',$get_id_hasil_rekon->id_proposal_psr_online)
+        ->value('no_ktp');
+
+        $get_dokumen_psr_online =   DB::connection('mysql_psr')
+        ->table('tb_pekebun')
+        ->where('no_ktp','=',$get_nik_psr_online)
         ->orderBy('surat_kuasa','DESC')
         ->orderBy('fc_kk','DESC')
         ->orderBy('fc_ktp','DESC')
