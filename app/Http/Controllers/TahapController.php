@@ -1426,7 +1426,7 @@ class TahapController extends Controller
                                     ->table('tb_pekebun')
                                     ->whereIn('no_ktp',$get_nik_pekebun)
                                     ->orderBy('id_proposal','ASC')
-                                    ->select('nama_pekebun','no_ktp','surat_kuasa','fc_kk','fc_ktp')
+                                    ->select('nama_pekebun','no_ktp','surat_kuasa','fc_kk','fc_ktp','surat_stdb','surat_kuasa','fc_buku_tabungan')
                                     ->get();
         $array_pekebun = [];
         $i = 1;
@@ -1438,6 +1438,9 @@ class TahapController extends Controller
                 (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
                 (empty(trim($value->fc_ktp)) == false ? "Ada" : "Tidak Ada"),
                 (empty(trim($value->fc_kk)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->surat_stdb)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->fc_buku_tabungan)) == false ? "Ada" : "Tidak Ada"),
             ];
 
         }
@@ -1447,7 +1450,7 @@ class TahapController extends Controller
         $sheet = $excel->sheet();
         $sheet->setColWidths(
             [
-                5,75,17,36,38,38
+                5,17,17,17,17,17,17,17,17
             ]
         );
         // Write heads
@@ -1459,20 +1462,23 @@ class TahapController extends Controller
             '@',
             '@',
             '@',
-            '@'
+            '@',
+            '@',
+            '@',
+            '@',
         ];
         $sheet->setColFormats($colFormats);
         $sheet->writeTo('A1','Nomor Proposal');
         $sheet->writeTo('B1',$data_lp->nomor_proposal);
-        $sheet->writeTo('A2','Nomor Proposal');
+        $sheet->writeTo('A2','Nama Kelembagaan Pekebun');
         $sheet->writeTo('B2',$data_lp->nama_kelembagaan_pekebun);
         $sheet->writeTo('A3','');
-        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa']);
+        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa','Scan STDB','Scan Surat Kuasa','Scan Buku Tabungan']);
 
         foreach($array_pekebun as $rowData) {
             $sheet->writeRow($rowData);
         }
-        $filename = 'Rekap Data Pekebun Proposal Per '.date('Y_m_d H_i_s').'.xlsx';
+        $filename = 'Rekap Data Pekebun Proposal '.$data_lp->nomor_proposal.' Per '.date('Y_m_d H_i_s').'.xlsx';
         $excel->save($filename);
 
         return Response::download($filename)->deleteFileAfterSend(true);
