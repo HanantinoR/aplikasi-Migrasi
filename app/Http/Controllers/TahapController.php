@@ -1395,4 +1395,156 @@ class TahapController extends Controller
         return redirect()->back();
 
     }
+
+    public function rekap_proposal($id_proposal){
+
+        $data_lp = DB::connection('mysql_rdp')
+                    ->table('proposal')
+                    ->join('kelembagaan_pekebun','kelembagaan_pekebun.id','=','proposal.id_kelembagaan_pekebun')
+                    ->where('proposal.id',$id_proposal)
+                    ->select('nomor_proposal','nama_kelembagaan_pekebun')
+                    ->first();
+
+        $id_pekebun = DB::connection('mysql_rdp')
+                        ->table('pekebunnya_proposal')
+                        ->where('id_proposal',$id_proposal)
+                        ->pluck('id_pekebun');
+
+        $get_nik_pekebun = DB::connection('mysql_rdp')
+                            ->table('pekebun')
+                            ->whereIn('id',$id_pekebun)
+                            ->pluck('nik_pekebun');
+
+        $data_pekebun_psr_online = DB::connection('mysql_psr')
+                                    ->table('tb_pekebun')
+                                    ->whereIn('no_ktp',$get_nik_pekebun)
+                                    ->orderBy('id_proposal','ASC')
+                                    ->select('nama_pekebun','no_ktp','surat_kuasa','fc_kk','fc_ktp')
+                                    ->get();
+        $array_pekebun = [];
+        $i = 1;
+        foreach ($data_pekebun_psr_online as $key => $value) {
+            $array_pekebun[] = [
+                $i++,
+                $value->nama_pekebun,
+                '="'.$value->no_ktp.'"',
+                (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->fc_ktp)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->fc_kk)) == false ? "Ada" : "Tidak Ada"),
+            ];
+
+        }
+        // dd($array_pekebun);
+
+        $excel = Excel::create(['Sheet1']);
+        $sheet = $excel->sheet();
+        $sheet->setColWidths(
+            [
+                5,75,17,36,38,38
+            ]
+        );
+        // Write heads
+
+        // Write data
+        $colFormats = [
+            '0',
+            '@',
+            '@',
+            '@',
+            '@',
+            '@'
+        ];
+        $sheet->setColFormats($colFormats);
+        $sheet->writeTo('A1','Nomor Proposal');
+        $sheet->writeTo('B1',$data_lp->nomor_proposal);
+        $sheet->writeTo('A2','Nomor Proposal');
+        $sheet->writeTo('B2',$data_lp->nama_kelembagaan_pekebun);
+        $sheet->writeTo('A3','');
+        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa']);
+
+        foreach($array_pekebun as $rowData) {
+            $sheet->writeRow($rowData);
+        }
+        $filename = 'Rekap Data Pekebun Proposal Per '.date('Y_m_d H_i_s').'.xlsx';
+        $excel->save($filename);
+
+        return Response::download($filename)->deleteFileAfterSend(true);
+
+    }
+
+    public function rekap_kelembagaan_pekebun($tahun_rekomtek){
+        $get_id_proposal_psr_online = DB::connection('mysql_psr')
+                                    ->table('tb_proposal')
+                                    ->whereYear('tgl_terbit_rekomendasi_ditjenbun','=',$tahun_rekomtek)
+                                    ->orderBy('id_proposal','ASC')
+                                    ->select('id_proposal','id_kelembagaan_pekebun');
+
+        $data_lp = DB::connection('mysql_psr')
+                    ->table('tb_proposal')
+                    ->whereYear('tgl_terbit_rekomendasi_ditjenbun','=',$tahun_rekomtek)
+                    ->orderBy('id_proposal','ASC')
+                    ->select('id_proposal','id_kelembagaan_pekebun');
+
+        $get_nik_pekebun = DB::connection('mysql_rdp')
+                            ->table('pekebun')
+                            ->whereIn('id',$id_pekebun)
+                            ->pluck('nik_pekebun');
+
+        $data_pekebun_psr_online = DB::connection('mysql_psr')
+                                    ->table('tb_pekebun')
+                                    ->whereIn('no_ktp',$get_nik_pekebun)
+                                    ->orderBy('id_proposal','ASC')
+                                    ->select('nama_pekebun','no_ktp','surat_kuasa','fc_kk','fc_ktp')
+                                    ->get();
+        $array_pekebun = [];
+        $i = 1;
+        foreach ($data_pekebun_psr_online as $key => $value) {
+            $array_pekebun[] = [
+                $i++,
+                $value->nama_pekebun,
+                '="'.$value->no_ktp.'"',
+                (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->fc_ktp)) == false ? "Ada" : "Tidak Ada"),
+                (empty(trim($value->fc_kk)) == false ? "Ada" : "Tidak Ada"),
+            ];
+
+        }
+        // dd($array_pekebun);
+
+        $excel = Excel::create(['Sheet1']);
+        $sheet = $excel->sheet();
+        $sheet->setColWidths(
+            [
+                5,75,17,36,38,38
+            ]
+        );
+        // Write heads
+
+        // Write data
+        $colFormats = [
+            '0',
+            '@',
+            '@',
+            '@',
+            '@',
+            '@'
+        ];
+        $sheet->setColFormats($colFormats);
+        $sheet->writeTo('A1','Nomor Proposal');
+        $sheet->writeTo('B1',$data_lp->nomor_proposal);
+        $sheet->writeTo('A2','Nomor Proposal');
+        $sheet->writeTo('B2',$data_lp->nama_kelembagaan_pekebun);
+        $sheet->writeTo('A3','');
+        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa']);
+
+        foreach($array_pekebun as $rowData) {
+            $sheet->writeRow($rowData);
+        }
+        $filename = 'Rekap Data Pekebun Proposal Per '.date('Y_m_d H_i_s').'.xlsx';
+        $excel->save($filename);
+
+        return Response::download($filename)->deleteFileAfterSend(true);
+
+    }
+
 }

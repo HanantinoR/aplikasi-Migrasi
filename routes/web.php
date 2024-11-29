@@ -38,6 +38,7 @@ route::group(['middleware'=> 'auth'],function(){
     //Tahap 2
     route::get('/tahap2',[TahapController::class,'index2'])->name('tahap.2');
     route::get('/tahap2/{id_proposal}',[TahapController::class,'detail2'])->name('tahap2.detail');
+    route::get('/tahap2/{id_proposal}/rekap_proposal',[TahapController::class,'rekap_proposal'])->name('tahap2.rekap_proposal');
     route::get('/tahap2/dokumen_pekebun/{id_pekebun}/{id_proposal}',[TahapController::class,'dokumen_pekebun_2'])->name('tahap2.dokumen_pekebun');
     route::post('/tahap2/dokumen_pekebun/post',[TahapController::class,'post_dokumen_pekebun_2'])->name('tahap2.post_dokumen_pekebun');
     route::get('/tahap2/legalitas_pekebun/{id_legalitas_pekebun}',[TahapController::class,'legalitas_pekebun_2'])->name('tahap2.legalitas_pekebun');
@@ -45,6 +46,8 @@ route::group(['middleware'=> 'auth'],function(){
     //Tahap 3
     route::get('/tahap3',[TahapController::class,'index3'])->name('tahap.3');
     route::get('/tahap3/{id}',[TahapController::class,'detail3'])->name('tahap3.detail');
+    route::get('/tahap3/rekap_dokumen_kelembagaan/{tahun_rekomtek}',[TahapController::class,'rekap_kelembagaan_pekebun'])->name('tahap.3.excel');
+
     //Tahap 4
     route::get('/tahap4',[TahapController::class,'index4'])->name('tahap.4');
     route::get('/tahap4/{id_proposal}',[TahapController::class,'detail4'])->name('tahap4.detail');

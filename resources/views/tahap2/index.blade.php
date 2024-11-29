@@ -93,7 +93,7 @@
                                                 </th>
                                                 <th class="text-secondary text-xs font-weight-semibold opacity-7">
                                                     <a href='{{route('tahap2.detail',["id_proposal"=>$proposal->id])}}' type="button" class="btn btn-sm btn-info m-0 ">Rekonsiliasi Dokumen Pekebun!</a>
-                                                    <a href='' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
+                                                    <a href='{{route('tahap2.rekap_proposal',["id_proposal"=>$proposal->id])}}' type="button" class="btn btn-sm btn-success btn-icon align-items-center mb-0 me-2">Download Excel</a>
                                                 </th>
                                             </tr>
                                         @endforeach
