@@ -48,6 +48,9 @@ route::group(['middleware'=> 'auth'],function(){
     //Tahap 4
     route::get('/tahap4',[TahapController::class,'index4'])->name('tahap.4');
     route::get('/tahap4/{id_proposal}',[TahapController::class,'detail4'])->name('tahap4.detail');
+    route::get('/tahap4/{id_proposal}/{id_legalitas}',[TahapController::class,'detail4pekebun'])->name('tahap4.detailpekebun');
+    route::post('/tahap4/{id_proposal}/{id_legalitas}/post',[TahapController::class,'detail4pekebunsave'])->name('tahap4.detailpekebunsave');
+
 
 });
 

@@ -111,13 +111,12 @@
                                                                             @if ($data_pekebun->tikor_zoom === "Tidak Bisa Zoom")
                                                                                 <button type="button" class="btn btn-danger btn-icon align-items-center mb-0 me-2"><i class="fa-solid fa-check-to-slot"></i> !!!Tidak Ada Titik Koordinat!!!</button>
                                                                             @else
-                                                                                <button type="button" onclick="map.setView([{{$data_pekebun->tikor_zoom}}],16)" class="btn btn-success btn-icon align-items-center mb-0 me-2"><i class="fa-solid fa-check-to-slot"></i> Zoom In</button>
+                                                                                <button type="button" onclick="map.setView([{{$data_pekebun->tikor_zoom}}],16);document.getElementById('map').scrollIntoView();" class="btn btn-success btn-icon align-items-center mb-0 me-2"><i class="fa-solid fa-check-to-slot"></i> Zoom In</button>
                                                                             @endif
                                                                         </td>
                                                                         <td>
-                                                                            {{-- <a href='{{route('tahap2.dokumen_pekebun',[])}}' type="button" class="btn btn-info m-0"><i class="fa-solid fa-file-circle-check"></i> Rekonsiliasi Dokumen Pekebun!</a> --}}
                                                                             <br>
-                                                                            <a href='' type="button" class="btn btn-success btn-icon align-items-center mb-0 me-2"><i class="fa-solid fa-check-to-slot"></i> Rekonsiliasi Legalitas Lahan Pekebun!</a>
+                                                                            <a href='{{route('tahap4.detailpekebun',["id_proposal"=>$id_proposal,"id_legalitas"=>$data_pekebun->id_legalitas])}}' type="button" class="btn btn-success btn-icon align-items-center mb-0 me-2"><i class="fa-solid fa-check-to-slot"></i> Rekonsiliasi Titik Koordinat!</a>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach

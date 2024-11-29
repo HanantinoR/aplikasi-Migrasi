@@ -589,6 +589,7 @@
 
         // Convert tikor ke format GeoJSON
         function to_geo_json(polygon, popup_body) {
+            if(!Array.isArray(polygon) || !Array.isArray(polygon[0]) || !Array.isArray(polygon[0][0])) console.log(polygon);
             if(polygon[0][0] < 80){
                 return {
                     type: "Feature",
