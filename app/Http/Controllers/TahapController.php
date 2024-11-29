@@ -577,6 +577,9 @@ class TahapController extends Controller
         ->table('tb_pekebun')
         ->where('id_pekebun','=',$get_id_hasil_rekon->id_pekebun_psr_online)
         ->where('id_proposal','=',$get_id_hasil_rekon->id_proposal_psr_online)
+        ->orderBy('surat_kuasa','DESC')
+        ->orderBy('fc_kk','DESC')
+        ->orderBy('fc_ktp','DESC')
         ->first();
 
         return view('tahap2.dokumen_pekebun')->with(compact('get_data_pekebun','get_dokumen_psr_online'));
@@ -1477,7 +1480,13 @@ class TahapController extends Controller
                                     ->table('tb_proposal')
                                     ->whereYear('tgl_terbit_rekomendasi_ditjenbun','=',$tahun_rekomtek)
                                     ->orderBy('id_proposal','ASC')
-                                    ->select('id_proposal','id_kelembagaan_pekebun');
+                                    ->select('id_proposal','id_koperasi')
+                                    ->get();
+
+        $data_koperasi = array();
+        foreach ($get_id_proposal_psr_online as $key => $value) {
+            dd($value);
+        }
 
         $data_lp = DB::connection('mysql_psr')
                     ->table('tb_proposal')
