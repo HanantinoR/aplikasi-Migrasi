@@ -1441,9 +1441,10 @@ class TahapController extends Controller
                 (empty(trim($value->surat_stdb)) == false ? "Ada" : "Tidak Ada"),
                 (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
                 (empty(trim($value->fc_buku_tabungan)) == false ? "Ada" : "Tidak Ada"),
-            ];
 
+            ];
         }
+
         // dd($array_pekebun);
 
         $excel = Excel::create(['Sheet1']);
@@ -1473,7 +1474,7 @@ class TahapController extends Controller
         $sheet->writeTo('A2','Nama Kelembagaan Pekebun');
         $sheet->writeTo('B2',$data_lp->nama_kelembagaan_pekebun);
         $sheet->writeTo('A3','');
-        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa','Scan STDB','Scan Surat Kuasa','Scan Buku Tabungan']);
+        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa','Scan STDB (2018 Kebawah)','Scan Surat Kuasa','Scan Buku Tabungan']);
 
         foreach($array_pekebun as $rowData) {
             $sheet->writeRow($rowData);
@@ -1494,49 +1495,34 @@ class TahapController extends Controller
                                     ->get();
 
         $data_koperasi = array();
-        foreach ($get_id_proposal_psr_online as $key => $value) {
-            dd($value);
-        }
-
-        $data_lp = DB::connection('mysql_psr')
-                    ->table('tb_proposal')
-                    ->whereYear('tgl_terbit_rekomendasi_ditjenbun','=',$tahun_rekomtek)
-                    ->orderBy('id_proposal','ASC')
-                    ->select('id_proposal','id_kelembagaan_pekebun');
-
-        $get_nik_pekebun = DB::connection('mysql_rdp')
-                            ->table('pekebun')
-                            ->whereIn('id',$id_pekebun)
-                            ->pluck('nik_pekebun');
-
-        $data_pekebun_psr_online = DB::connection('mysql_psr')
-                                    ->table('tb_pekebun')
-                                    ->whereIn('no_ktp',$get_nik_pekebun)
-                                    ->orderBy('id_proposal','ASC')
-                                    ->select('nama_pekebun','no_ktp','surat_kuasa','fc_kk','fc_ktp')
-                                    ->get();
-        $array_pekebun = [];
         $i = 1;
-        foreach ($data_pekebun_psr_online as $key => $value) {
-            $array_pekebun[] = [
-                $i++,
-                $value->nama_pekebun,
-                '="'.$value->no_ktp.'"',
-                (empty(trim($value->surat_kuasa)) == false ? "Ada" : "Tidak Ada"),
-                (empty(trim($value->fc_ktp)) == false ? "Ada" : "Tidak Ada"),
-                (empty(trim($value->fc_kk)) == false ? "Ada" : "Tidak Ada"),
-            ];
+        foreach ($get_id_proposal_psr_online as $key => $value) {
+            $dokumen_persyaratan = DB::connection('mysql_psr')
+                                    ->table('tb_proposal')
+                                    ->where('id_proposal','=',$value->id_proposal)
+                                    ->select("no_dokumen","surat_permohonan","surat_stdb","metode_peremajaan","bibit_unggul","peta_lokasi_kebun","rab","offering_letter","offtaker","legalitas_koperasi","bebas_kawasan","hasil_rekomendasi_kabupaten","hasil_rekomendasi_provinsi","cpcl_bupati","hasil_rekomendasi_ditjenbun","perjanjian","sk_penetapan_dirut","surat_bap","pernyataan_mutlak","bukti_spm","kwitansi_pembayaran","kerjasama_kerja","daftar_rekening_pekebun","profil_lahan","produktivitas","profil_pekebun","rat","keterangan_legalitas_lahan","berita_acara_kab","kawasan_hutan_klhk","berita_acara_prov","kemitraan_kerja_usaha","permintaan_penetapan_cpcl","kawasan_hutan_bupati","cpcl_nominatif","dokumen_bank","hasil_verifikasi_ditjenbun","sk_penunjukan","berita_acara_bpdpks","file_rab","sp_peremajaan","sk_benih_sawit","sk_legalitas_bpn","sp_kebun","sk_gambut","rencana_kerja","shp_file","surveyor_surat_tugas","surveyor_laporan")
+                                    ->first();
+            $data_koperasi[$value->id_proposal] = array();
+            array_push($data_koperasi[$value->id_proposal],$i);
 
+            foreach ($dokumen_persyaratan as $nama_file => $dokumen) {
+                // array_push($data_koperasi[$value->id_proposal],"asd");
+                if($nama_file == "no_dokumen"){
+                    array_push($data_koperasi[$value->id_proposal],$dokumen);
+                }else{
+                    array_push($data_koperasi[$value->id_proposal],(empty(trim($dokumen)) == false ? "Ada" : "Tidak Ada"));
+                }
+            }
+            $i++;
         }
-        // dd($array_pekebun);
 
         $excel = Excel::create(['Sheet1']);
         $sheet = $excel->sheet();
-        $sheet->setColWidths(
-            [
-                5,75,17,36,38,38
-            ]
-        );
+        // $sheet->setColWidths(
+        //     [
+        //         5,75,17,36,38,38
+        //     ]
+        // );
         // Write heads
 
         // Write data
@@ -1549,17 +1535,15 @@ class TahapController extends Controller
             '@'
         ];
         $sheet->setColFormats($colFormats);
-        $sheet->writeTo('A1','Nomor Proposal');
-        $sheet->writeTo('B1',$data_lp->nomor_proposal);
-        $sheet->writeTo('A2','Nomor Proposal');
-        $sheet->writeTo('B2',$data_lp->nama_kelembagaan_pekebun);
-        $sheet->writeTo('A3','');
-        $sheet->writeRow(['No', 'Nama Pekebun', 'NIK','Scan KTP','Scan KK','Scan Surat Kuasa']);
+        $sheet->writeTo('A1','Tahun Rekomtek');
+        $sheet->writeTo('B1',$tahun_rekomtek);
+        $sheet->writeTo('A2','');
+        $sheet->writeRow(["Nomor","Nomor Proposal","surat_permohonan","surat_stdb","metode_peremajaan","bibit_unggul","peta_lokasi_kebun","rab","offering_letter","offtaker","legalitas_koperasi","bebas_kawasan","hasil_rekomendasi_kabupaten","hasil_rekomendasi_provinsi","cpcl_bupati","hasil_rekomendasi_ditjenbun","perjanjian","sk_penetapan_dirut","surat_bap","pernyataan_mutlak","bukti_spm","kwitansi_pembayaran","kerjasama_kerja","daftar_rekening_pekebun","profil_lahan","produktivitas","profil_pekebun","rat","keterangan_legalitas_lahan","berita_acara_kab","kawasan_hutan_klhk","berita_acara_prov","kemitraan_kerja_usaha","permintaan_penetapan_cpcl","kawasan_hutan_bupati","cpcl_nominatif","dokumen_bank","hasil_verifikasi_ditjenbun","sk_penunjukan","berita_acara_bpdpks","file_rab","sp_peremajaan","sk_benih_sawit","sk_legalitas_bpn","sp_kebun","sk_gambut","rencana_kerja","shp_file","surveyor_surat_tugas","surveyor_laporan"]);
 
-        foreach($array_pekebun as $rowData) {
+        foreach($data_koperasi as $rowData) {
             $sheet->writeRow($rowData);
         }
-        $filename = 'Rekap Data Pekebun Proposal Per '.date('Y_m_d H_i_s').'.xlsx';
+        $filename = 'Rekap Dokumen Rekomtek Tahun '.$tahun_rekomtek.' Per '.date('Y_m_d H_i_s').'.xlsx';
         $excel->save($filename);
 
         return Response::download($filename)->deleteFileAfterSend(true);
