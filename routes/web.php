@@ -54,7 +54,15 @@ route::group(['middleware'=> 'auth'],function(){
     route::get('/tahap4/{id_proposal}/{id_legalitas}',[TahapController::class,'detail4pekebun'])->name('tahap4.detailpekebun');
     route::post('/tahap4/{id_proposal}/{id_legalitas}/post',[TahapController::class,'detail4pekebunsave'])->name('tahap4.detailpekebunsave');
 
-
+    //Manajemen Akun
+    route::get('/manajemen_akun',[UserController::class,'index'])->name('manajemen_akun.index');
+    route::get('/manajemen_akun/tambah_akun',[UserController::class,'pendaftaran_akun'])->name('manajemen_akun.pendaftaran_akun');
+    route::post('/post_daftar_unit_kerja_dinas',[UserController::class,'post_daftar_unit_kerja_dinas'])->name('post_daftar_unit_kerja_dinas');
+    route::post('/post_pendaftaran_akun',[UserController::class,'post_pendaftaran_akun'])->name('post_pendaftaran_akun');
+    route::get('/manajemen_akun/edit_akun/{id_pengguna}',[UserController::class,'edit_akun'])->name('manajemen_akun.edit_akun');
+    route::post('/manajemen_akun/edit_akun/{id_pengguna}/simpan',[UserController::class,'post_edit_akun'])->name('manajemen_akun.post_edit_akun');
+    route::get('/manajemen_akun/ubah_password/{id_pengguna}',[UserController::class,'edit_password'])->name('manajemen_akun.edit_password');
+    route::post('/manajemen_akun/ubah_password/{id_pengguna}/simpan',[UserController::class,'post_edit_password'])->name('manajemen_akun.post_edit_password');
 });
 
 route::get('/tables', function () {

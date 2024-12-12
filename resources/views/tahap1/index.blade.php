@@ -6,12 +6,17 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12">
                     <div class="d-md-flex align-items-center mb-3 mx-2">
+                        @php
+                            $daerah = DB::connection('mysql_rdp')
+                                        ->table('acuan_dinas_perkebunan')
+                                        ->where('id','=',Auth::user()->location)
+                                        ->value('nama_lengkap_dinas');
+                        @endphp
                         <div class="mb-md-0 mb-3">
-                            <h3 class="font-weight-bold mb-0">Hello, {{ Auth::user()->name }}</h3>
+                            <h3 class="font-weight-bold mb-0">Hello, {{ Auth::user()->name }} - {{@$daerah}}</h3>
                             <p class="mb-0">Semangat Rekonnyaaaa!</p>
                         </div>
-                    </div>
-                </div>
+                    </div>                </div>
             </div>
             <hr class="my-0">
             <div class="row mt-4">
@@ -20,7 +25,7 @@
                         <div class="card-header border-bottom pb-0">
                             <div class="d-sm-flex align-items-center mb-3">
                                 <div>
-                                    <h6 class="font-weight-semibold text-lg mb-0">TAHAP 1</h6>
+                                    <h6 class="font-weight-semibold text-lg mb-0">Tahap 1</h6>
                                     <p class="text-sm mb-sm-0"><strong>Rekonsiliasi Data Pekebun</strong></p>
                                 </div>
                                 <div class="ms-auto d-flex">
